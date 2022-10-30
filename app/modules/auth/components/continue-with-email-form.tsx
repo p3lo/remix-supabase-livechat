@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { useTranslation } from 'react-i18next';
+import { AiOutlineMail } from 'react-icons/ai';
 
 import { useTypedFetcher } from '~/hooks/use-fetcher';
 import type { action } from '~/routes/__auth/send-magic-link';
@@ -22,24 +23,15 @@ export function ContinueWithEmailForm() {
 
   return (
     <sendMagicLink.Form method="post" action="/send-magic-link" replace={false} ref={ref}>
-      <input
-        type="email"
-        name="email"
-        id="magic-link"
-        className="w-full px-2 py-1 mb-1 text-lg border border-gray-500 rounded"
-        disabled={isLoading}
-      />
+      <input type="email" name="email" id="magic-link" className="w-full input input-bordered" disabled={isLoading} />
       <div
-        className={`mb-2 h-6 text-center ${data?.error ? 'text-red-600' : ''} ${isSuccessFull ? 'text-green-600' : ''}`}
+        className={`mb-1 h-6 text-center ${data?.error ? 'text-red-600' : ''} ${isSuccessFull ? 'text-green-600' : ''}`}
       >
         {!isSuccessFull ? data?.error : t('register.checkEmail')}
       </div>
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="flex items-center justify-center w-full px-4 py-3 font-medium text-white bg-green-500 rounded-md hover:bg-green-600 "
-      >
+      <button type="submit" disabled={isLoading} className="w-full gap-2 btn ">
         {buttonLabel}
+        <AiOutlineMail />
       </button>
     </sendMagicLink.Form>
   );
