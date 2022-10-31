@@ -28,7 +28,7 @@ function MainApp() {
   const toggleColorScheme = () => setColorScheme((current) => (current === 'dark' ? 'light' : 'dark'));
 
   return (
-    <div data-theme={colorScheme}>
+    <div data-theme={colorScheme} className="relative min-h-screen">
       <div className="sticky top-0 z-50 flex space-x-2 border-b border-gray-500 navbar bg-base-100/80">
         <div className="justify-start flex-none">
           <Link to="/" className="text-xl font-bold normal-case">
@@ -112,6 +112,7 @@ function MainApp() {
           </label>
         </div>
       </div>
+
       <Outlet />
     </div>
   );
