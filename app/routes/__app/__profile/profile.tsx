@@ -5,6 +5,7 @@ import { json } from '@remix-run/node';
 import { Form, useActionData, useMatches } from '@remix-run/react';
 import invariant from 'tiny-invariant';
 
+import { db } from '~/database';
 import type { User } from '~/modules/user/types';
 
 type ActionData = { id: null | string; nickname: null | string };
@@ -21,7 +22,8 @@ export async function action({ request }: ActionArgs) {
   }
   invariant(typeof id === 'string', 'Invalid user id');
   invariant(typeof nickname === 'string', 'Invalid nickname');
-
+  const updatedUser = await db.user.update({ where: { id }, data: { nickname } });
+  // HANDLE DUPLICATE NICKNAME
   return null;
 }
 
