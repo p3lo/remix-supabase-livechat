@@ -29,7 +29,7 @@ function MainApp() {
 
   return (
     <div data-theme={colorScheme} className="relative min-h-screen">
-      <div className="sticky top-0 z-50 flex space-x-2 border-b border-gray-500 navbar bg-base-100/80">
+      <div className="sticky top-0 z-50 flex space-x-2 border-b border-gray-500 navbar bg-base-200/80">
         <div className="justify-start flex-none">
           <Link to="/" className="text-xl font-bold normal-case">
             LiveChat
@@ -58,7 +58,7 @@ function MainApp() {
               </label>
               <ul
                 tabIndex={0}
-                className="p-2 mt-3 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52"
+                className="p-2 mt-3 shadow menu menu-compact dropdown-content bg-base-200 rounded-box w-52"
               >
                 <label className="mx-auto my-1 text-sm">Welcome {user.nickname}</label>
                 <div className="my-0 divider" />
