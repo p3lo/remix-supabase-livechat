@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-import { PrismaClient } from "@prisma/client";
-import { createClient } from "@supabase/supabase-js";
+import { PrismaClient } from '@prisma/client';
+import { createClient } from '@supabase/supabase-js';
 
-import { SUPABASE_SERVICE_ROLE, SUPABASE_URL } from "../utils/env";
+import { SUPABASE_SERVICE_ROLE, SUPABASE_URL } from '../utils/env';
 
 const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE, {
   auth: {
@@ -13,7 +13,7 @@ const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE, {
 
 const prisma = new PrismaClient();
 
-const email = "hello@supabase.com";
+const email = 'hello@supabase.com';
 
 const getUserId = async (): Promise<string> => {
   const existingUserId = await supabaseAdmin.auth.admin
@@ -25,14 +25,14 @@ const getUserId = async (): Promise<string> => {
   const newUserId = await supabaseAdmin.auth.admin
     .createUser({
       email,
-      password: "supabase",
+      password: 'supabase',
       email_confirm: true,
     })
     .then(({ data }) => data.user?.id);
 
   if (newUserId) return newUserId;
 
-  throw new Error("Could not create or get user");
+  throw new Error('Could not create or get user');
 };
 
 async function seed() {
@@ -50,26 +50,24 @@ async function seed() {
     },
   });
 
-  await prisma.note.create({
-    data: {
-      title: "My first note",
-      body: "Hello, world!",
-      userId: user.id,
-    },
-  });
+  // await prisma.note.create({
+  //   data: {
+  //     title: "My first note",
+  //     body: "Hello, world!",
+  //     userId: user.id,
+  //   },
+  // });
 
-  await prisma.note.create({
-    data: {
-      title: "My second note",
-      body: "Hello, world!",
-      userId: user.id,
-    },
-  });
+  // await prisma.note.create({
+  //   data: {
+  //     title: "My second note",
+  //     body: "Hello, world!",
+  //     userId: user.id,
+  //   },
+  // });
 
   console.log(`Database has been seeded. 🌱\n`);
-  console.log(
-    `User added to your database 👇 \n🆔: ${user.id}\n📧: ${user.email}\n🔑: supabase`
-  );
+  console.log(`User added to your database 👇 \n🆔: ${user.id}\n📧: ${user.email}\n🔑: supabase`);
 }
 
 seed()

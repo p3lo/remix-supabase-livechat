@@ -1,35 +1,27 @@
-import type { User } from "~/database";
-import { db } from "~/database";
-import type { AuthSession } from "~/modules/auth";
-import {
-  createEmailAuthAccount,
-  signInWithEmail,
-  deleteAuthAccount,
-} from "~/modules/auth";
+import type { User } from '~/database';
+import { db } from '~/database';
+import type { AuthSession } from '~/modules/auth';
+import { createEmailAuthAccount, signInWithEmail, deleteAuthAccount } from '~/modules/auth';
 
-export async function getUserByEmail(email: User["email"]) {
+export async function getUserByEmail(email: User['email']) {
   return db.user.findUnique({ where: { email: email.toLowerCase() } });
 }
 
-async function createUser({
-  email,
-  userId,
-}: Pick<AuthSession, "userId" | "email">) {
+async function createUser({ email, userId }: Pick<AuthSession, 'userId' | 'email'>) {
+  const nickname = makeNick(7);
   return db.user
     .create({
       data: {
         email,
         id: userId,
+        nickname,
       },
     })
     .then((user) => user)
     .catch(() => null);
 }
 
-export async function tryCreateUser({
-  email,
-  userId,
-}: Pick<AuthSession, "userId" | "email">) {
+export async function tryCreateUser({ email, userId }: Pick<AuthSession, 'userId' | 'email'>) {
   const user = await createUser({
     userId,
     email,
@@ -45,10 +37,7 @@ export async function tryCreateUser({
   return user;
 }
 
-export async function createUserAccount(
-  email: string,
-  password: string
-): Promise<AuthSession | null> {
+export async function createUserAccount(email: string, password: string): Promise<AuthSession | null> {
   const authAccount = await createEmailAuthAccount(email, password);
 
   // ok, no user account created
@@ -68,4 +57,14 @@ export async function createUserAccount(
   if (!user) return null;
 
   return authSession;
+}
+
+function makeNick(length: number) {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
 }

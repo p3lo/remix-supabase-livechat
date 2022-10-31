@@ -1,9 +1,26 @@
 import React from 'react';
 
 import { useLocalStorage } from '@mantine/hooks';
-import { Link, Outlet } from '@remix-run/react';
+import type { LoaderArgs } from '@remix-run/node';
+import { json } from '@remix-run/node';
+import { Form, Link, Outlet, useLoaderData } from '@remix-run/react';
+import { useTranslation } from 'react-i18next';
+import { AiOutlineLogout, AiOutlineSetting, AiOutlineUser } from 'react-icons/ai';
+
+import { db } from '~/database';
+import { getAuthSession } from '~/modules/auth';
+
+export async function loader({ request }: LoaderArgs) {
+  const session = await getAuthSession(request);
+  if (!session) return json({ user: null }, { status: 401 });
+  const user = await db.user.findUnique({ where: { id: session.userId } });
+  return json({ user });
+}
 
 function MainApp() {
+  const { user } = useLoaderData<typeof loader>();
+  const { t } = useTranslation('auth');
+
   const [colorScheme, setColorScheme] = useLocalStorage({
     key: 'color-scheme',
     defaultValue: 'dark',
@@ -32,12 +49,53 @@ function MainApp() {
           </Link>
         </div>
         <div className="flex justify-end flex-none space-x-2">
-          <Link to="/join" className="normal-case btn w-[100px] btn-sm">
-            Register
-          </Link>
-          <Link to="/login" className="normal-case btn w-[100px] btn-outline btn-sm">
-            Login
-          </Link>
+          {user ? (
+            <div className="dropdown dropdown-end">
+              <label tabIndex={0} className="btn btn-ghost btn-circle avatar placeholder">
+                <div className="w-10 rounded-full bg-neutral-focus text-neutral-content">
+                  <span>{user.nickname.charAt(0)}</span>
+                </div>
+              </label>
+              <ul
+                tabIndex={0}
+                className="p-2 mt-3 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52"
+              >
+                <label className="mx-auto my-1 text-sm">Welcome {user.nickname}</label>
+                <div className="my-0 divider" />
+                <li>
+                  <Link to="/profile">
+                    <AiOutlineUser />
+                    Profile
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/settings">
+                    <AiOutlineSetting />
+                    Settings
+                  </Link>
+                </li>
+                <div className="my-0 divider" />
+                <li>
+                  <Form action="/logout" method="post">
+                    <button data-test-id="logout" type="submit" className="flex items-center gap-2 text-red-600">
+                      <AiOutlineLogout />
+                      {t('logout.action')}
+                    </button>
+                  </Form>
+                </li>
+              </ul>
+            </div>
+          ) : (
+            <>
+              <Link to="/join" className="normal-case btn w-[100px] btn-sm">
+                Register
+              </Link>
+              <Link to="/login" className="normal-case btn w-[100px] btn-outline btn-sm">
+                Login
+              </Link>
+            </>
+          )}
+
           <label className="swap swap-rotate">
             <input
               type="checkbox"

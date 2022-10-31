@@ -18,7 +18,7 @@ export async function loader({ request }: LoaderArgs) {
   const t = await i18nextServer.getFixedT(request, 'auth');
   const title = t('login.title');
 
-  if (authSession) return redirect('/notes');
+  if (authSession) return redirect('/');
 
   return json({ title });
 }
@@ -75,7 +75,7 @@ export default function LoginPage() {
   const { t } = useTranslation('auth');
 
   return (
-    <div className="w-full max-w-md px-8 mx-auto border shadow border-gray-500/50 rounded-xl">
+    <>
       <Form ref={zo.ref} method="post" className="mt-3 space-y-3" replace>
         <div>
           <label htmlFor={zo.fields.email()} className="label-text">
@@ -161,6 +161,6 @@ export default function LoginPage() {
           <AiOutlineFacebook className="h-[30px] w-[30px]" />
         </button>
       </div>
-    </div>
+    </>
   );
 }

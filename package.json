@@ -7,7 +7,7 @@
     "build:css": "npm run generate:css -- --minify",
     "build:remix": "remix build",
     "db:prepare-migration": "prisma migrate dev --create-only --skip-seed",
-    "db:deploy-migration": "prisma migrate deploy",
+    "db:deploy-migration": "prisma migrate deploy --skip-seed",
     "dev": "run-p dev:*",
     "dev:css": "npm run generate:css -- --watch",
     "dev:remix": "remix dev",
