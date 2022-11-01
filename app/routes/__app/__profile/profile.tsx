@@ -108,7 +108,7 @@ function Profile() {
         {data?.image && <p className="text-xs text-green-500">Image uploaded successfully.</p>}
       </Form>
       <p className="text-sm">{user.email}</p>
-      <p className="text-sm">Credits: ( {user.credits} )</p>
+      <p className="text-sm">Token balance: {user.credits}</p>
       <Form method="post" className="flex flex-col items-center w-full space-y-2">
         <div className="w-full max-w-xs form-control">
           <label className="label">

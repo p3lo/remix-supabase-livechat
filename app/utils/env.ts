@@ -18,6 +18,18 @@ declare global {
       SERVER_URL: string;
       SUPABASE_ANON_PUBLIC: string;
       SESSION_SECRET: string;
+      // STRIPE
+      STRIPE_PUBLIC_API_KEY: string;
+      STRIPE_SECRET_API_KEY: string;
+
+      // STRIPE PLANS
+      PLAN_1_PRICE_ID: string;
+      PLAN_2_PRICE_ID: string;
+      PLAN_3_PRICE_ID: string;
+
+      // STRIPE WEBHOOK
+      DEV_STRIPE_WEBHOOK_ENDPOINT_SECRET: string;
+      PROD_STRIPE_WEBHOOK_ENDPOINT_SECRET: string;
     }
   }
 }

@@ -65,7 +65,7 @@ function MainApp() {
               </label>
               <ul
                 tabIndex={0}
-                className="p-2 mt-3 shadow menu menu-compact dropdown-content bg-base-200 rounded-box w-52"
+                className="p-2 mt-3 shadow menu menu-compact dropdown-content bg-base-200/80 rounded-box w-52"
               >
                 <label className="mx-auto my-1 text-sm">Welcome {user.nickname}</label>
                 <div className="my-0 divider" />
