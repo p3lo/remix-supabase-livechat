@@ -7,6 +7,7 @@ import { Form, Link, Outlet, useLoaderData } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { AiOutlineLogout, AiOutlineSetting, AiOutlineUser } from 'react-icons/ai';
 
+import { Image } from '~/components/image';
 import { db } from '~/database';
 import { getAuthSession } from '~/modules/auth';
 
@@ -52,9 +53,15 @@ function MainApp() {
           {user ? (
             <div className="dropdown dropdown-end">
               <label tabIndex={0} className="btn btn-ghost btn-circle avatar placeholder">
-                <div className="w-10 rounded-full bg-neutral-focus text-neutral-content">
-                  <span>{user.nickname.charAt(0)}</span>
-                </div>
+                {user.avatar ? (
+                  <div className="w-10 rounded-full">
+                    <Image src={user.avatar} width={50} fit="contain" alt="notfound" />
+                  </div>
+                ) : (
+                  <div className="w-10 rounded-full bg-neutral-focus text-neutral-content">
+                    <span>{user.nickname.charAt(0)}</span>
+                  </div>
+                )}
               </label>
               <ul
                 tabIndex={0}

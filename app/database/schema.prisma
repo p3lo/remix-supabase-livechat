@@ -11,6 +11,7 @@ generator client {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
+  avatar    String?
   nickname  String   @unique @default(uuid())
   role      Role     @default(VIEWER)
   credits   Int      @default(0)
