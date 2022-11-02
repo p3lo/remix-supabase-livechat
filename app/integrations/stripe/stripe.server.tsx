@@ -12,22 +12,25 @@ export function getDomainUrl(request: Request) {
   return `${protocol}://${host}`;
 }
 
-export const getStripeSession = async (priceId: string, domainUrl: string): Promise<string> => {
+export const getStripeSession = async (priceId: string, domainUrl: string, locale: any): Promise<string> => {
   const stripe = new Stripe(STRIPE_SECRET_API_KEY as string, {
     apiVersion: '2022-08-01',
   });
+
   const lineItems = [
     {
       price: priceId,
       quantity: 1,
     },
   ];
+
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
     payment_method_types: ['card'],
     line_items: lineItems,
     success_url: `${domainUrl}/payment/success`,
     cancel_url: `${domainUrl}/payment/cancelled`,
+    locale,
   });
   if (!session?.url) throw new Error('Unable to create a new Stripe Checkout Session.');
   return session.url;

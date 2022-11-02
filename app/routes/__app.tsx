@@ -3,7 +3,7 @@ import React from 'react';
 import { useLocalStorage } from '@mantine/hooks';
 import type { LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
-import { Form, Link, Outlet, useLoaderData } from '@remix-run/react';
+import { Form, Link, Outlet, useLoaderData, useMatches } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { AiOutlineLogout, AiOutlineSetting, AiOutlineUser } from 'react-icons/ai';
 
@@ -21,6 +21,7 @@ export async function loader({ request }: LoaderArgs) {
 function MainApp() {
   const { user } = useLoaderData<typeof loader>();
   const { t } = useTranslation('auth');
+  const { data } = useMatches()[0];
 
   const [colorScheme, setColorScheme] = useLocalStorage({
     key: 'color-scheme',
@@ -50,6 +51,33 @@ function MainApp() {
           </Link>
         </div>
         <div className="flex justify-end flex-none space-x-2">
+          <div className="dropdown dropdown-end dropdown-hover">
+            <label tabIndex={0} className="btn btn-ghost btn-circle btn-xs avatar placeholder w-6 h-6">
+              <div className="w-5 rounded-full">
+                {data.locale === 'en' ? (
+                  <img src="https://hatscripts.github.io/circle-flags/flags/us.svg" width={20} alt="notfound" />
+                ) : (
+                  <img src="https://hatscripts.github.io/circle-flags/flags/sk.svg" width={20} alt="notfound" />
+                )}
+              </div>
+            </label>
+            <ul tabIndex={0} className="p-1 shadow menu dropdown-content bg-base-200/50 rounded-box">
+              <li>
+                <Link to="?lng=sk">
+                  <div className="w-5 rounded-full">
+                    <img src="https://hatscripts.github.io/circle-flags/flags/sk.svg" width={20} alt="notfound" />
+                  </div>
+                </Link>
+              </li>
+              <li>
+                <Link to="?lng=en">
+                  <div className="w-5 rounded-full">
+                    <img src="https://hatscripts.github.io/circle-flags/flags/us.svg" width={20} alt="notfound" />
+                  </div>
+                </Link>
+              </li>
+            </ul>
+          </div>
           {user ? (
             <>
               <div className="flex flex-col items-center">

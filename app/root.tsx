@@ -8,6 +8,7 @@ import { useChangeLanguage } from 'remix-i18next';
 
 import { i18nextServer } from '~/integrations/i18n';
 
+import { i18nCookie } from './integrations/i18n/i18nCookie';
 import tailwindStylesheetUrl from './styles/tailwind.css';
 import { getBrowserEnv } from './utils/env';
 
@@ -21,10 +22,15 @@ export const meta: MetaFunction = () => ({
 
 export const loader: LoaderFunction = async ({ request }) => {
   const locale = await i18nextServer.getLocale(request);
-  return json({
-    locale,
-    env: getBrowserEnv(),
-  });
+  return json(
+    {
+      locale,
+      env: getBrowserEnv(),
+    },
+    {
+      headers: { 'Set-Cookie': await i18nCookie.serialize(locale) },
+    }
+  );
 };
 
 export default function App() {
@@ -39,7 +45,7 @@ export default function App() {
   useChangeLanguage(locale);
 
   return (
-    <html lang={locale} dir={i18n.dir()} className="h-full">
+    <html data-locale={locale} lang={locale} dir={i18n.dir()} className="h-full">
       <head>
         <Meta />
         <Links />
