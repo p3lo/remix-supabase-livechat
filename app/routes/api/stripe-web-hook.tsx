@@ -2,6 +2,16 @@ import type { ActionFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import Stripe from 'stripe';
 
+import { db } from '~/database';
+
+type StripeWebHookBody = {
+  amount_total: number;
+  payment_status: string;
+  metadata: {
+    customer: string;
+  };
+};
+
 const STRIPE_SECRET_API_KEY = process.env.STRIPE_SECRET_API_KEY;
 
 const WEBHOOK_ENDPOINT_SECRET =
@@ -27,6 +37,23 @@ export const action: ActionFunction = async ({ request }) => {
     console.log(err);
     return json({}, { status: 500 });
   }
-  console.log('event', event);
+  switch (event?.type) {
+    case 'checkout.session.completed': {
+      const session = event.data.object as StripeWebHookBody;
+
+      if (session.payment_status === 'paid') {
+        await db.user.update({
+          where: {
+            id: session.metadata.customer,
+          },
+          data: {
+            credits: {
+              increment: session.amount_total,
+            },
+          },
+        });
+      }
+    }
+  }
   return new Response(null, { status: 200 });
 };
