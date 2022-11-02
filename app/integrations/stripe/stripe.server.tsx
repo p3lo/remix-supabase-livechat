@@ -1,5 +1,7 @@
 import Stripe from 'stripe';
 
+import { STRIPE_SECRET_API_KEY } from '~/utils';
+
 // copied from (https://github.com/kentcdodds/kentcdodds.com/blob/ebb36d82009685e14da3d4b5d0ce4d577ed09c63/app/utils/misc.tsx#L229-L237)
 export function getDomainUrl(request: Request) {
   const host = request.headers.get('X-Forwarded-Host') ?? request.headers.get('host');
@@ -11,7 +13,7 @@ export function getDomainUrl(request: Request) {
 }
 
 export const getStripeSession = async (priceId: string, domainUrl: string): Promise<string> => {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+  const stripe = new Stripe(STRIPE_SECRET_API_KEY as string, {
     apiVersion: '2022-08-01',
   });
   const lineItems = [

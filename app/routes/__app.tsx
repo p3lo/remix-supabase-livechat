@@ -51,47 +51,53 @@ function MainApp() {
         </div>
         <div className="flex justify-end flex-none space-x-2">
           {user ? (
-            <div className="dropdown dropdown-end">
-              <label tabIndex={0} className="btn btn-ghost btn-circle avatar placeholder">
-                {user.avatar ? (
-                  <div className="w-10 rounded-full">
-                    <Image src={user.avatar} width={50} fit="contain" alt="notfound" />
-                  </div>
-                ) : (
-                  <div className="w-10 rounded-full bg-neutral-focus text-neutral-content">
-                    <span>{user.nickname.charAt(0)}</span>
-                  </div>
-                )}
-              </label>
-              <ul
-                tabIndex={0}
-                className="p-2 mt-3 shadow menu menu-compact dropdown-content bg-base-200/80 rounded-box w-52"
-              >
-                <label className="mx-auto my-1 text-sm">Welcome {user.nickname}</label>
-                <div className="my-0 divider" />
-                <li>
-                  <Link to="/profile">
-                    <AiOutlineUser />
-                    Profile
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/settings">
-                    <AiOutlineSetting />
-                    Settings
-                  </Link>
-                </li>
-                <div className="my-0 divider" />
-                <li>
-                  <Form action="/logout" method="post">
-                    <button data-test-id="logout" type="submit" className="flex items-center gap-2 text-red-600">
-                      <AiOutlineLogout />
-                      {t('logout.action')}
-                    </button>
-                  </Form>
-                </li>
-              </ul>
-            </div>
+            <>
+              <div className="flex flex-col items-center">
+                <p className="text-sm">Balance</p>
+                <p className="text-xs">( {user.credits} )</p>
+              </div>
+              <div className="dropdown dropdown-end">
+                <label tabIndex={0} className="btn btn-ghost btn-circle avatar placeholder">
+                  {user.avatar ? (
+                    <div className="w-10 rounded-full">
+                      <Image src={user.avatar} width={50} fit="contain" alt="notfound" />
+                    </div>
+                  ) : (
+                    <div className="w-10 rounded-full bg-neutral-focus text-neutral-content">
+                      <span>{user.nickname.charAt(0)}</span>
+                    </div>
+                  )}
+                </label>
+                <ul
+                  tabIndex={0}
+                  className="p-2 mt-3 shadow menu menu-compact dropdown-content bg-base-200/80 rounded-box w-52"
+                >
+                  <label className="mx-auto my-1 text-sm">Welcome {user.nickname}</label>
+                  <div className="my-0 divider" />
+                  <li>
+                    <Link to="/profile">
+                      <AiOutlineUser />
+                      Profile
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/settings">
+                      <AiOutlineSetting />
+                      Settings
+                    </Link>
+                  </li>
+                  <div className="my-0 divider" />
+                  <li>
+                    <Form action="/logout" method="post">
+                      <button data-test-id="logout" type="submit" className="flex items-center gap-2 text-red-600">
+                        <AiOutlineLogout />
+                        {t('logout.action')}
+                      </button>
+                    </Form>
+                  </li>
+                </ul>
+              </div>
+            </>
           ) : (
             <>
               <Link to="/join" className="normal-case btn w-[100px] btn-sm">

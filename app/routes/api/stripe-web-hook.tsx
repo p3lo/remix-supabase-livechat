@@ -16,6 +16,7 @@ const stripe = new Stripe(STRIPE_SECRET_API_KEY, {
 export const action: ActionFunction = async ({ request }) => {
   const payload = await request.text();
   const signature = request.headers.get('stripe-signature');
+
   let event;
   try {
     if (typeof signature === 'string') {

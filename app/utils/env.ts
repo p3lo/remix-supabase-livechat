@@ -58,6 +58,13 @@ function getEnv(name: string, { isRequired, isSecret }: EnvOptions = { isSecret:
 export const SERVER_URL = getEnv('SERVER_URL', { isSecret: false });
 export const SUPABASE_SERVICE_ROLE = getEnv('SUPABASE_SERVICE_ROLE');
 export const SESSION_SECRET = getEnv('SESSION_SECRET');
+export const STRIPE_PUBLIC_API_KEY = getEnv('STRIPE_PUBLIC_API_KEY');
+export const STRIPE_SECRET_API_KEY = getEnv('STRIPE_SECRET_API_KEY');
+export const PLAN_1_PRICE_ID = getEnv('PLAN_1_PRICE_ID');
+export const PLAN_2_PRICE_ID = getEnv('PLAN_2_PRICE_ID');
+export const PLAN_3_PRICE_ID = getEnv('PLAN_3_PRICE_ID');
+export const DEV_STRIPE_WEBHOOK_ENDPOINT_SECRET = getEnv('DEV_STRIPE_WEBHOOK_ENDPOINT_SECRET');
+export const PROD_STRIPE_WEBHOOK_ENDPOINT_SECRET = getEnv('PROD_STRIPE_WEBHOOK_ENDPOINT_SECRET');
 
 /**
  * Shared envs
