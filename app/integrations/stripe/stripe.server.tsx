@@ -16,7 +16,8 @@ export const getStripeSession = async (
   priceId: string,
   domainUrl: string,
   locale: any,
-  customer: string
+  customer: string,
+  tokens: string
 ): Promise<string> => {
   const stripe = new Stripe(STRIPE_SECRET_API_KEY as string, {
     apiVersion: '2022-08-01',
@@ -38,6 +39,7 @@ export const getStripeSession = async (
     locale,
     metadata: {
       customer,
+      tokens,
     },
   });
   if (!session?.url) throw new Error('Unable to create a new Stripe Checkout Session.');

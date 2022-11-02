@@ -5,7 +5,7 @@ import type { LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { Form, Link, Outlet, useLoaderData, useMatches } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
-import { AiOutlineLogout, AiOutlineSetting, AiOutlineUser } from 'react-icons/ai';
+import { AiOutlineLogout, AiOutlineUser, AiOutlineDollarCircle } from 'react-icons/ai';
 
 import { Image } from '~/components/image';
 import { db } from '~/database';
@@ -52,7 +52,7 @@ function MainApp() {
         </div>
         <div className="flex justify-end flex-none space-x-2">
           <div className="dropdown dropdown-end dropdown-hover">
-            <label tabIndex={0} className="btn btn-ghost btn-circle btn-xs avatar placeholder w-6 h-6">
+            <label tabIndex={0} className="w-6 h-6 btn btn-ghost btn-circle btn-xs avatar placeholder">
               <div className="w-5 rounded-full">
                 {data.locale === 'en' ? (
                   <img src="https://hatscripts.github.io/circle-flags/flags/us.svg" width={20} alt="notfound" />
@@ -81,7 +81,7 @@ function MainApp() {
           {user ? (
             <>
               <div className="flex flex-col items-center">
-                <p className="text-sm">Balance</p>
+                <p className="text-xs">Balance</p>
                 <p className="text-xs">( {user.credits} )</p>
               </div>
               <div className="dropdown dropdown-end">
@@ -109,9 +109,9 @@ function MainApp() {
                     </Link>
                   </li>
                   <li>
-                    <Link to="/settings">
-                      <AiOutlineSetting />
-                      Settings
+                    <Link to="/buy_tokens">
+                      <AiOutlineDollarCircle />
+                      Buy tokens
                     </Link>
                   </li>
                   <div className="my-0 divider" />
@@ -141,7 +141,7 @@ function MainApp() {
             <input
               type="checkbox"
               className="invisible"
-              checked={colorScheme === 'light'}
+              checked={colorScheme === 'dark'}
               onChange={toggleColorScheme}
             />
             <svg className="w-6 h-6 fill-current swap-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

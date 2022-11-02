@@ -9,6 +9,7 @@ type StripeWebHookBody = {
   payment_status: string;
   metadata: {
     customer: string;
+    tokens: string;
   };
 };
 
@@ -48,7 +49,7 @@ export const action: ActionFunction = async ({ request }) => {
           },
           data: {
             credits: {
-              increment: session.amount_total,
+              increment: parseInt(session.metadata.tokens),
             },
           },
         });
