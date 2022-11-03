@@ -10,7 +10,7 @@ export async function loader({ request }: LoaderArgs) {
 
 function ProfileLayout() {
   return (
-    <div className="w-full py-6 mx-auto sm:w-[90%] md:w-[75%] lg:w-[60%] xl:w-[45%] 2xl:w-[35%]">
+    <div className="w-full py-6 mx-auto sm:w-[90%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[45%]">
       <Outlet />
     </div>
   );

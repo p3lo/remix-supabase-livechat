@@ -5,7 +5,7 @@ import type { LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { Form, Link, Outlet, useLoaderData, useMatches } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
-import { AiOutlineLogout, AiOutlineUser, AiOutlineDollarCircle } from 'react-icons/ai';
+import { AiOutlineLogout, AiOutlineUser, AiOutlineDollarCircle, AiOutlineHistory } from 'react-icons/ai';
 
 import { Image } from '~/components/image';
 import { db } from '~/database';
@@ -112,6 +112,12 @@ function MainApp() {
                     <Link to="/buy_tokens">
                       <AiOutlineDollarCircle />
                       Buy tokens
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/orders">
+                      <AiOutlineHistory />
+                      Orders
                     </Link>
                   </li>
                   <div className="my-0 divider" />
