@@ -43,16 +43,25 @@ export const action: ActionFunction = async ({ request }) => {
       const session = event.data.object as StripeWebHookBody;
 
       if (session.payment_status === 'paid') {
-        await db.user.update({
-          where: {
-            id: session.metadata.customer,
-          },
-          data: {
-            credits: {
-              increment: parseInt(session.metadata.tokens),
+        await Promise.all([
+          db.user.update({
+            where: {
+              id: session.metadata.customer,
             },
-          },
-        });
+            data: {
+              credits: {
+                increment: parseInt(session.metadata.tokens),
+              },
+            },
+          }),
+          db.orders.create({
+            data: {
+              userId: session.metadata.customer,
+              credits: parseInt(session.metadata.tokens),
+              price: parseInt((session.amount_total / 100).toFixed(2)),
+            },
+          }),
+        ]);
       }
     }
   }

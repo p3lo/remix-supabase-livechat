@@ -17,6 +17,17 @@ model User {
   credits   Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Orders    Orders[]
+}
+
+model Orders {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  credits   Int
+  price     Decimal
 }
 
 enum Role {
