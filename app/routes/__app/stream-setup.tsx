@@ -2,9 +2,9 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import { VideoRenderer, AudioRenderer } from '@livekit/react-core';
-import type { LoaderArgs } from '@remix-run/node';
+import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { Form, useActionData, useLoaderData, useNavigate } from '@remix-run/react';
 import type { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
 import { createLocalVideoTrack, createLocalAudioTrack } from 'livekit-client';
 
@@ -28,6 +28,16 @@ export async function loader({ request }: LoaderArgs) {
   });
   if (user?.role !== 'STREAMER') return redirect('/');
   return json({ user });
+}
+
+export async function action({ request }: ActionArgs) {
+  const formData = await request.formData();
+  const videoDevice = formData.get('video') as string;
+  const audioDevice = formData.get('audio') as string;
+  const userId = formData.get('userId') as string;
+  const nickname = formData.get('nickname') as string;
+  // console.log(videoDevice, audioDevice, userId, nickname);
+  return redirect(`/${nickname}`);
 }
 
 function StreamSetup() {
@@ -129,6 +139,15 @@ function StreamSetup() {
         </div>
         {videoElement}
         {audioElement}
+        <Form method="post">
+          <input hidden readOnly value={currentVideoDevice?.deviceId} name="video" />
+          <input hidden readOnly value={currentAudioDevice?.deviceId} name="audio" />
+          <input hidden readOnly value={user.id} name="userId" />
+          <input hidden readOnly value={user.nickname} name="nickname" />
+          <button className="btn btn-primary" type="submit">
+            Start stream
+          </button>
+        </Form>
       </div>
     </div>
   );
