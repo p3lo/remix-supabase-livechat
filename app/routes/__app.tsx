@@ -51,6 +51,11 @@ function MainApp() {
           </Link>
         </div>
         <div className="flex justify-end flex-none space-x-2">
+          {user?.role === 'STREAMER' && (
+            <Link to="/stream-setup" className="btn-success normal-case btn w-[150px] btn-sm">
+              Start stream
+            </Link>
+          )}
           <div className="dropdown dropdown-end dropdown-hover">
             <label tabIndex={0} className="w-6 h-6 btn btn-ghost btn-circle btn-xs avatar placeholder">
               <div className="w-5 rounded-full">
