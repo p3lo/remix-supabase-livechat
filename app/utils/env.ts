@@ -30,6 +30,11 @@ declare global {
       // STRIPE WEBHOOK
       DEV_STRIPE_WEBHOOK_ENDPOINT_SECRET: string;
       PROD_STRIPE_WEBHOOK_ENDPOINT_SECRET: string;
+
+      // LIVEKIT
+      LIVEKIT_API: string;
+      LIVEKIT_SECRET: string;
+      LIVEKIT_SERVER: string;
     }
   }
 }
@@ -65,6 +70,9 @@ export const PLAN_2_PRICE_ID = getEnv('PLAN_2_PRICE_ID');
 export const PLAN_3_PRICE_ID = getEnv('PLAN_3_PRICE_ID');
 export const DEV_STRIPE_WEBHOOK_ENDPOINT_SECRET = getEnv('DEV_STRIPE_WEBHOOK_ENDPOINT_SECRET');
 export const PROD_STRIPE_WEBHOOK_ENDPOINT_SECRET = getEnv('PROD_STRIPE_WEBHOOK_ENDPOINT_SECRET');
+export const LIVEKIT_API = getEnv('LIVEKIT_API');
+export const LIVEKIT_SECRET = getEnv('LIVEKIT_SECRET');
+export const LIVEKIT_SERVER = getEnv('LIVEKIT_SERVER');
 
 /**
  * Shared envs
