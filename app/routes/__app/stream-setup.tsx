@@ -1,10 +1,10 @@
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { VideoRenderer, AudioRenderer } from '@livekit/react-core';
+import { VideoRenderer } from '@livekit/react-core';
 import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
-import { Form, useActionData, useLoaderData, useNavigate } from '@remix-run/react';
+import { Form, useLoaderData } from '@remix-run/react';
 import type { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
 import { createLocalVideoTrack, createLocalAudioTrack } from 'livekit-client';
 

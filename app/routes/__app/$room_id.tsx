@@ -7,7 +7,7 @@ import invariant from 'tiny-invariant';
 
 import { db } from '~/database';
 import { getAuthSession } from '~/modules/auth';
-import { getRoom } from '~/modules/livekit';
+import { getAccessToken, getRoom } from '~/modules/livekit';
 
 export async function loader({ request, params }: LoaderArgs) {
   const session = await getAuthSession(request);
@@ -38,7 +38,9 @@ export async function loader({ request, params }: LoaderArgs) {
             audioDevice: true,
           },
         });
-        return json({ user, user_type: 'streamer', devices });
+        if (!devices) return redirect('/stream-setup');
+        const token = getAccessToken(true, user.nickname, roomName);
+        return json({ user, user_type: 'streamer', devices, token });
       }
     }
     return redirect('/');
@@ -54,14 +56,16 @@ export async function loader({ request, params }: LoaderArgs) {
           role: true,
         },
       });
-      return json({ user, user_type: 'viewer', devices: null });
+      const token = getAccessToken(false, user!.nickname, roomName);
+      return json({ user, user_type: 'viewer', devices: null, token });
     } else {
-      return json({ user: null, user_type: 'viewer', devices: null });
+      const token = getAccessToken(false, 'guest', roomName);
+      return json({ user: null, user_type: 'viewer', devices: null, token });
     }
   }
 }
 
 export default function Room() {
-  const { user, user_type, devices } = useLoaderData<typeof loader>();
+  const { user, user_type, devices, token } = useLoaderData<typeof loader>();
   return <div>Room</div>;
 }
