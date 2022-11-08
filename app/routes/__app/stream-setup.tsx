@@ -36,6 +36,20 @@ export async function action({ request }: ActionArgs) {
   const audioDevice = formData.get('audio') as string;
   const userId = formData.get('userId') as string;
   const nickname = formData.get('nickname') as string;
+  await db.devices.upsert({
+    where: {
+      userId,
+    },
+    update: {
+      videoDevice,
+      audioDevice,
+    },
+    create: {
+      userId,
+      videoDevice,
+      audioDevice,
+    },
+  });
   // console.log(videoDevice, audioDevice, userId, nickname);
   return redirect(`/${nickname}`);
 }
@@ -70,20 +84,34 @@ function StreamSetup() {
 
   React.useEffect(() => {
     // enable video by default
+    let stream: LocalVideoTrack;
     createLocalVideoTrack({
       deviceId: currentVideoDevice?.deviceId,
     }).then((track) => {
+      stream = track;
       setVideoTrack(track);
     });
+    return () => {
+      stream?.stop();
+      stream?.detach();
+      setVideoTrack(undefined);
+    };
   }, [currentVideoDevice]);
 
   React.useEffect(() => {
     // enable video by default
+    let stream: LocalAudioTrack;
     createLocalAudioTrack({
       deviceId: currentAudioDevice?.deviceId,
     }).then((track) => {
+      stream = track;
       setAudioTrack(track);
     });
+    return () => {
+      stream?.stop();
+      stream?.detach();
+      setAudioTrack(undefined);
+    };
   }, [currentAudioDevice]);
 
   function changeVideoSource(source: string) {
@@ -97,15 +125,11 @@ function StreamSetup() {
   }
 
   let videoElement: ReactElement;
-  let audioElement: ReactElement;
   if (videoTrack && audioTrack) {
     videoElement = <VideoRenderer track={videoTrack} isLocal={true} />;
-    audioElement = <AudioRenderer track={audioTrack} isLocal={true} />;
   } else {
     videoElement = <p>Loading stream...</p>;
-    audioElement = <></>;
   }
-
   return (
     <div className="w-full py-6 mx-auto sm:w-[90%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[45%]">
       <div className="flex flex-col items-center justify-center w-full space-y-3">
@@ -138,12 +162,11 @@ function StreamSetup() {
           </select>
         </div>
         {videoElement}
-        {audioElement}
         <Form method="post">
-          <input hidden readOnly value={currentVideoDevice?.deviceId} name="video" />
-          <input hidden readOnly value={currentAudioDevice?.deviceId} name="audio" />
-          <input hidden readOnly value={user.id} name="userId" />
-          <input hidden readOnly value={user.nickname} name="nickname" />
+          <input hidden readOnly defaultValue={currentVideoDevice?.deviceId} name="video" />
+          <input hidden readOnly defaultValue={currentAudioDevice?.deviceId} name="audio" />
+          <input hidden readOnly defaultValue={user.id} name="userId" />
+          <input hidden readOnly defaultValue={user.nickname} name="nickname" />
           <button className="btn btn-primary" type="submit">
             Start stream
           </button>
