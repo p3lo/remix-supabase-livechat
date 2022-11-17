@@ -58,8 +58,23 @@ export async function loader({ request, params }: LoaderArgs) {
           role: true,
         },
       });
-      const token = getAccessToken(false, user!.nickname, roomName);
-      return json({ user, user_type: 'viewer', devices: null, token, server: LIVEKIT_SERVER });
+      if (user?.nickname === roomName && user?.role === 'STREAMER') {
+        const devices = await db.devices.findUnique({
+          where: {
+            userId: user.id,
+          },
+          select: {
+            videoDevice: true,
+            audioDevice: true,
+          },
+        });
+        if (!devices) return redirect('/stream-setup');
+        const token = getAccessToken(true, user.nickname, roomName);
+        return json({ user, user_type: 'streamer', devices, token, server: LIVEKIT_SERVER });
+      } else {
+        const token = getAccessToken(false, user!.nickname, roomName);
+        return json({ user, user_type: 'viewer', devices: null, token, server: LIVEKIT_SERVER });
+      }
     } else {
       const token = getAccessToken(false, 'guest', roomName);
       return json({ user: null, user_type: 'viewer', devices: null, token, server: LIVEKIT_SERVER });
