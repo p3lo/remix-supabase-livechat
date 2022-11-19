@@ -4,7 +4,7 @@ import { useRoom } from '@livekit/react-core';
 import type { LocalParticipant, Room, RoomConnectOptions, RoomOptions } from 'livekit-client';
 import { ConnectionState, VideoPresets } from 'livekit-client';
 
-import { getAudioDevices, getVideoDevices, setMediaEnabled } from '../service.client';
+import { setMediaEnabled } from '../service.client';
 
 const roomOptions: RoomOptions = {
   adaptiveStream: true,
@@ -14,7 +14,11 @@ const roomOptions: RoomOptions = {
     videoCodec: 'h264',
   },
   videoCaptureDefaults: {
-    resolution: VideoPresets.h540.resolution,
+    resolution: VideoPresets.h720.resolution,
+  },
+  audioCaptureDefaults: {
+    echoCancellation: true,
+    noiseSuppression: true,
   },
 };
 
@@ -34,26 +38,22 @@ export function Streamer({
   const [myInfo, setMyInfo] = React.useState<LocalParticipant | undefined>(undefined);
   const { room, participants, connect } = useRoom(roomOptions);
 
+  async function init() {
+    const connectedRoom = await connect(server, token, connectOptions);
+    if (!connectedRoom) {
+      return;
+    }
+
+    if (connectedRoom.state === ConnectionState.Connected) {
+      await onConnected(connectedRoom, devices);
+    }
+
+    const info = room?.localParticipant;
+    setMyInfo(info);
+  }
+
   React.useEffect(() => {
-    (async () => {
-      const connectedRoom = await connect(server, token, connectOptions);
-      if (!connectedRoom) {
-        return;
-      }
-
-      if (onConnected && connectedRoom.state === ConnectionState.Connected) {
-        await onConnected(connectedRoom, devices);
-      }
-
-      const info = room?.localParticipant;
-      setMyInfo(info);
-    })();
-
-    return () => {
-      if (room?.state !== ConnectionState.Disconnected) {
-        room?.disconnect();
-      }
-    };
+    init().catch(console.error);
   }, []);
 
   if (room?.state === ConnectionState.Connecting) {
@@ -70,5 +70,13 @@ export function Streamer({
     });
   }
 
-  return <div>Streamer</div>;
+  return (
+    <>
+      {myInfo ? (
+        <div>
+          <p>{myInfo.identity}</p>
+        </div>
+      ) : null}
+    </>
+  );
 }

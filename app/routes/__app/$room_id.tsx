@@ -87,6 +87,18 @@ export default function Room() {
   return (
     <div className="w-full py-6 mx-auto sm:w-[90%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[45%]">
       {user_type === 'streamer' && <Streamer user={user!} devices={devices!} token={token} server={server} />}
+      {/* {user_type === 'streamer' && (
+        <StreamerSettings
+          url={server}
+          token={token}
+          roomId={user!.nickname.toLowerCase()}
+          getName={user!.nickname.toLowerCase()}
+          audioEnabled={true}
+          audioDevice={devices!.audioDevice}
+          videoEnabled={true}
+          videoDevice={devices!.videoDevice}
+        />
+      )} */}
     </div>
   );
 }
