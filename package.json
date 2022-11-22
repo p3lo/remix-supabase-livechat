@@ -30,7 +30,6 @@
   "prettier": {},
   "dependencies": {
     "@headlessui/react": "^1.7.3",
-    "@livekit/react-components": "^1.0.3",
     "@livekit/react-core": "^1.0.3",
     "@mantine/hooks": "^5.6.3",
     "@prisma/client": "^4.5.0",
