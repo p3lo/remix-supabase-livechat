@@ -73,8 +73,9 @@ export function Streamer({
   return (
     <>
       {myInfo ? (
-        <div>
-          <p>{myInfo.identity}</p>
+        <div className="flex flex-col">
+          <p className="text-xs font-bold text-red-600">My name: {myInfo.identity}</p>
+          <p className="text-xs font-bold text-red-600">My sid: {myInfo.sid}</p>
         </div>
       ) : null}
     </>
