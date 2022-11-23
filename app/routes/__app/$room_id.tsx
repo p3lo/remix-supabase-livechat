@@ -1,15 +1,18 @@
 import React from 'react';
 
-import type { LoaderArgs } from '@remix-run/node';
+import type { LinksFunction, LoaderArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import invariant from 'tiny-invariant';
+import videojs from 'video.js/dist/video-js.css';
 
 import { db } from '~/database';
 import { getAuthSession } from '~/modules/auth';
 import { getAccessToken, getRoom } from '~/modules/livekit';
 import { Streamer } from '~/modules/livekit/components/Streamer';
 import { LIVEKIT_SERVER } from '~/utils';
+
+export const links: LinksFunction = () => [{ rel: 'stylesheet', href: videojs }];
 
 export async function loader({ request, params }: LoaderArgs) {
   const session = await getAuthSession(request);
