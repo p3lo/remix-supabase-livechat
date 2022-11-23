@@ -5,6 +5,7 @@ import type { LocalParticipant, Room, RoomConnectOptions, RoomOptions } from 'li
 import { ConnectionState, VideoPresets } from 'livekit-client';
 
 import { setMediaEnabled } from '../service.client';
+import { StreamerVideo } from './StreamerVideo';
 
 const roomOptions: RoomOptions = {
   adaptiveStream: true,
@@ -76,6 +77,7 @@ export function Streamer({
         <div className="flex flex-col">
           <p className="text-xs font-bold text-red-600">My name: {myInfo.identity}</p>
           <p className="text-xs font-bold text-red-600">My sid: {myInfo.sid}</p>
+          <StreamerVideo myinfo={myInfo} room={room} />
         </div>
       ) : null}
     </>
