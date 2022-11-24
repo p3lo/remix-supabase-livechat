@@ -1,7 +1,7 @@
+/* eslint-disable tailwindcss/classnames-order */
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { VideoRenderer } from '@livekit/react-core';
 import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
@@ -116,20 +116,6 @@ function StreamSetup() {
     setCurrentAudioDevice(allAudioDevices![index!]);
   }
 
-  async function stopVideo() {
-    if (videoTrack && audioTrack) {
-      console.log('stopping video');
-      videoTrack.stop();
-
-      setVideoTrack(undefined);
-      audioTrack?.stop();
-      setAudioTrack(undefined);
-    }
-    // videoTrack?.stop();
-    // audioTrack?.stop();
-    // videoTrack?.attachedElements;
-  }
-
   let videoElement: ReactElement;
   if (videoTrack && audioTrack) {
     // videoElement = <VideoRenderer track={videoTrack} isLocal={true} />;
@@ -160,7 +146,7 @@ function StreamSetup() {
     videoElement = <p>Loading stream...</p>;
   }
   return (
-    <div className="w-full py-6 mx-auto sm:w-[90%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[45%]">
+    <div className="mx-auto w-full py-6 sm:w-[90%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[45%]">
       <div className="flex flex-col items-center justify-center w-full space-y-3">
         <p className="text-2xl font-bold">Stream setup</p>
         <p className="text-sm">{user.nickname}</p>
@@ -169,7 +155,7 @@ function StreamSetup() {
             <span className="text-xs label-text">Select camera</span>
           </label>
           <select
-            className="text-xs select select-bordered select-sm"
+            className="text-xs select-bordered select select-sm"
             onChange={(e) => changeVideoSource(e.currentTarget.value)}
           >
             {videoDevicesList.map((device) => (
@@ -182,7 +168,7 @@ function StreamSetup() {
             <span className="text-xs label-text">Select microphone</span>
           </label>
           <select
-            className="text-xs select select-bordered select-sm"
+            className="text-xs select-bordered select select-sm"
             onChange={(e) => changeAudioSource(e.currentTarget.value)}
           >
             {audioDevicesList.map((device) => (
@@ -196,11 +182,10 @@ function StreamSetup() {
           <input hidden readOnly defaultValue={currentAudioDevice?.deviceId} name="audio" />
           <input hidden readOnly defaultValue={user.id} name="userId" />
           <input hidden readOnly defaultValue={user.nickname} name="nickname" />
-          <button className="btn btn-primary" type="submit">
+          <button className="btn-primary btn" type="submit">
             Start stream
           </button>
         </Form>
-        <button onClick={stopVideo}>Stop</button>
       </div>
     </div>
   );
