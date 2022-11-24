@@ -7,6 +7,7 @@ import { json, redirect } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
 import type { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
 import { createLocalVideoTrack, createLocalAudioTrack } from 'livekit-client';
+import ReactPlayer from 'react-player';
 
 import { db } from '~/database';
 import { requireAuthSession } from '~/modules/auth';
@@ -84,34 +85,25 @@ function StreamSetup() {
 
   React.useEffect(() => {
     // enable video by default
-    let stream: LocalVideoTrack;
+    // let stream: LocalVideoTrack;
+
     createLocalVideoTrack({
       deviceId: currentVideoDevice?.deviceId,
     }).then((track) => {
-      stream = track;
+      // stream = track;
       setVideoTrack(track);
     });
-    return () => {
-      stream?.stop();
-      stream?.detach();
-      setVideoTrack(undefined);
-    };
   }, [currentVideoDevice]);
 
   React.useEffect(() => {
     // enable video by default
-    let stream: LocalAudioTrack;
+    // let stream: LocalAudioTrack;
     createLocalAudioTrack({
       deviceId: currentAudioDevice?.deviceId,
     }).then((track) => {
-      stream = track;
+      // stream = track;
       setAudioTrack(track);
     });
-    return () => {
-      stream?.stop();
-      stream?.detach();
-      setAudioTrack(undefined);
-    };
   }, [currentAudioDevice]);
 
   function changeVideoSource(source: string) {
@@ -124,9 +116,46 @@ function StreamSetup() {
     setCurrentAudioDevice(allAudioDevices![index!]);
   }
 
+  async function stopVideo() {
+    if (videoTrack && audioTrack) {
+      console.log('stopping video');
+      videoTrack.stop();
+
+      setVideoTrack(undefined);
+      audioTrack?.stop();
+      setAudioTrack(undefined);
+    }
+    // videoTrack?.stop();
+    // audioTrack?.stop();
+    // videoTrack?.attachedElements;
+  }
+
   let videoElement: ReactElement;
   if (videoTrack && audioTrack) {
-    videoElement = <VideoRenderer track={videoTrack} isLocal={true} />;
+    // videoElement = <VideoRenderer track={videoTrack} isLocal={true} />;
+    videoElement = (
+      <ReactPlayer
+        //
+        playsinline // very very imp prop
+        playIcon={<></>}
+        //
+        pip={false}
+        light={false}
+        controls={false}
+        muted={true}
+        playing={true}
+        //
+        url={videoTrack.mediaStream}
+        style={{ transform: 'rotateY(180deg)' }}
+        //
+        height={'100%'}
+        width={'100%'}
+        // style={flipStyle}
+        onError={(err) => {
+          console.log(err, 'participant video error');
+        }}
+      />
+    );
   } else {
     videoElement = <p>Loading stream...</p>;
   }
@@ -171,6 +200,7 @@ function StreamSetup() {
             Start stream
           </button>
         </Form>
+        <button onClick={stopVideo}>Stop</button>
       </div>
     </div>
   );

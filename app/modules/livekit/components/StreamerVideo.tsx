@@ -14,6 +14,25 @@ export function StreamerVideo({ myinfo, room }: StreamerVideoProps) {
   const micRef = React.useRef<HTMLAudioElement>(null);
   const [isAudioEnabled, setIsAudioEnabled] = React.useState(true);
   const [isVideoEnabled, setIsVideoEnabled] = React.useState(true);
+  const didMountRef = React.useRef(false);
+
+  React.useEffect(
+    () => () => {
+      if (didMountRef.current) {
+        if (room) {
+          Promise.all([
+            room.localParticipant.setCameraEnabled(false),
+            room.localParticipant.setMicrophoneEnabled(false),
+          ]).then(() => {
+            console.log('Disabled camera and microphone');
+          });
+          room.disconnect();
+        }
+      }
+      didMountRef.current = true;
+    },
+    []
+  );
 
   React.useEffect(() => {
     if (micRef.current) {

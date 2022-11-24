@@ -87,6 +87,7 @@ export async function loader({ request, params }: LoaderArgs) {
 
 export default function Room() {
   const { user, user_type, devices, token, server } = useLoaderData<typeof loader>();
+
   return (
     <div className="w-full py-6 mx-auto sm:w-[90%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[45%]">
       {user_type === 'streamer' && <Streamer user={user!} devices={devices!} token={token} server={server} />}
