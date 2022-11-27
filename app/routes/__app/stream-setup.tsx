@@ -1,17 +1,36 @@
-/* eslint-disable tailwindcss/classnames-order */
-import type { ReactElement } from 'react';
 import React from 'react';
 
+import { useRoom } from '@livekit/react-core';
 import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
-import type { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
-import { createLocalVideoTrack, createLocalAudioTrack } from 'livekit-client';
-import ReactPlayer from 'react-player';
+import type { LocalParticipant, Room, RoomConnectOptions, RoomOptions } from 'livekit-client';
+import { VideoPresets, ConnectionState } from 'livekit-client';
 
 import { db } from '~/database';
 import { requireAuthSession } from '~/modules/auth';
-import { getAudioDevices, getVideoDevices } from '~/modules/livekit';
+import { getAccessToken, getAudioDevices, getVideoDevices } from '~/modules/livekit';
+import { StreamerVideo } from '~/modules/livekit/components/StreamerVideo';
+import { setMediaEnabled } from '~/modules/livekit/service.client';
+import { LIVEKIT_SERVER } from '~/utils';
+
+const roomOptions: RoomOptions = {
+  adaptiveStream: true,
+  dynacast: true,
+  publishDefaults: {
+    simulcast: true,
+    videoCodec: 'h264',
+  },
+  videoCaptureDefaults: {
+    resolution: VideoPresets.h720.resolution,
+  },
+  audioCaptureDefaults: {
+    echoCancellation: true,
+    noiseSuppression: true,
+  },
+};
+
+const connectOptions: RoomConnectOptions = {};
 
 export async function loader({ request }: LoaderArgs) {
   const session = await requireAuthSession(request);
@@ -28,7 +47,8 @@ export async function loader({ request }: LoaderArgs) {
     },
   });
   if (user?.role !== 'STREAMER') return redirect('/');
-  return json({ user });
+  const token = getAccessToken(true, user.nickname, `${user.nickname}-setup`);
+  return json({ user, token, server: LIVEKIT_SERVER });
 }
 
 export async function action({ request }: ActionArgs) {
@@ -56,15 +76,50 @@ export async function action({ request }: ActionArgs) {
 }
 
 function StreamSetup() {
-  const { user } = useLoaderData<typeof loader>();
+  const { user, token, server } = useLoaderData<typeof loader>();
   const [allAudioDevices, setAllAudioDevices] = React.useState<MediaDeviceInfo[]>();
   const [allVideoDevices, setAllVideoDevices] = React.useState<MediaDeviceInfo[]>();
   const [currentAudioDevice, setCurrentAudioDevice] = React.useState<MediaDeviceInfo>();
   const [currentVideoDevice, setCurrentVideoDevice] = React.useState<MediaDeviceInfo>();
   const [audioDevicesList, setAudioDevicesList] = React.useState<string[]>([]);
   const [videoDevicesList, setVideoDevicesList] = React.useState<string[]>([]);
-  const [videoTrack, setVideoTrack] = React.useState<LocalVideoTrack>();
-  const [audioTrack, setAudioTrack] = React.useState<LocalAudioTrack>();
+  const [myInfo, setMyInfo] = React.useState<LocalParticipant | undefined>(undefined);
+  const didMountRef = React.useRef(false);
+
+  const { room, connect } = useRoom(roomOptions);
+
+  React.useEffect(
+    () => () => {
+      if (didMountRef.current) {
+        if (room) {
+          Promise.all([
+            room.localParticipant.setCameraEnabled(false),
+            room.localParticipant.setMicrophoneEnabled(false),
+          ]).then(() => {});
+          room.disconnect();
+        }
+      }
+      didMountRef.current = true;
+    },
+    []
+  );
+
+  async function init() {
+    const audio = await getAudioDevices().then((value) => value);
+    const video = await getVideoDevices().then((value) => value);
+
+    const connectedRoom = await connect(server, token, connectOptions);
+    if (!connectedRoom) {
+      return;
+    }
+
+    if (connectedRoom.state === ConnectionState.Connected) {
+      await onConnected(connectedRoom, { audioDevice: audio[0].deviceId, videoDevice: video[0].deviceId });
+    }
+
+    const info = room?.localParticipant;
+    setMyInfo(info);
+  }
 
   React.useEffect(() => {
     (async () => {
@@ -81,70 +136,35 @@ function StreamSetup() {
       const devicesList = devices.map((device) => device.label);
       setVideoDevicesList(devicesList);
     })();
+    init();
   }, []);
-
-  React.useEffect(() => {
-    // enable video by default
-    // let stream: LocalVideoTrack;
-
-    createLocalVideoTrack({
-      deviceId: currentVideoDevice?.deviceId,
-    }).then((track) => {
-      // stream = track;
-      setVideoTrack(track);
-    });
-  }, [currentVideoDevice]);
-
-  React.useEffect(() => {
-    // enable video by default
-    // let stream: LocalAudioTrack;
-    createLocalAudioTrack({
-      deviceId: currentAudioDevice?.deviceId,
-    }).then((track) => {
-      // stream = track;
-      setAudioTrack(track);
-    });
-  }, [currentAudioDevice]);
 
   function changeVideoSource(source: string) {
     const index = allVideoDevices?.findIndex((device) => device.label === source);
     setCurrentVideoDevice(allVideoDevices![index!]);
+    if (room) {
+      room.switchActiveDevice('videoinput', allVideoDevices![index!].deviceId);
+    }
   }
 
   function changeAudioSource(source: string) {
     const index = allAudioDevices?.findIndex((device) => device.label === source);
     setCurrentAudioDevice(allAudioDevices![index!]);
+    if (room) {
+      room.switchActiveDevice('audioinput', allAudioDevices![index!].deviceId);
+    }
   }
 
-  let videoElement: ReactElement;
-  if (videoTrack && audioTrack) {
-    // videoElement = <VideoRenderer track={videoTrack} isLocal={true} />;
-    videoElement = (
-      <ReactPlayer
-        //
-        playsinline // very very imp prop
-        playIcon={<></>}
-        //
-        pip={false}
-        light={false}
-        controls={false}
-        muted={true}
-        playing={true}
-        //
-        url={videoTrack.mediaStream}
-        style={{ transform: 'rotateY(180deg)' }}
-        //
-        height={'100%'}
-        width={'100%'}
-        // style={flipStyle}
-        onError={(err) => {
-          console.log(err, 'participant video error');
-        }}
-      />
-    );
-  } else {
-    videoElement = <p>Loading stream...</p>;
+  async function onConnected(room: Room, devices: { videoDevice: string; audioDevice: string }) {
+    await setMediaEnabled({
+      room,
+      audioEnabled: true,
+      audioDeviceId: devices.audioDevice,
+      videoEnabled: true,
+      videoDeviceId: devices.videoDevice,
+    });
   }
+
   return (
     <div className="mx-auto w-full py-6 sm:w-[90%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[45%]">
       <div className="flex flex-col items-center justify-center w-full space-y-3">
@@ -176,7 +196,7 @@ function StreamSetup() {
             ))}
           </select>
         </div>
-        {videoElement}
+        {myInfo && <StreamerVideo myinfo={myInfo} room={room} />}
         <Form method="post">
           <input hidden readOnly defaultValue={currentVideoDevice?.deviceId} name="video" />
           <input hidden readOnly defaultValue={currentAudioDevice?.deviceId} name="audio" />
