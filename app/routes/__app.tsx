@@ -52,7 +52,7 @@ function MainApp() {
         </div>
         <div className="flex justify-end flex-none space-x-2">
           {user?.role === 'STREAMER' && (
-            <Link to="/stream-setup" className="btn-success normal-case btn w-[150px] btn-sm">
+            <Link to={`/${user.nickname}`} className="btn-success normal-case btn w-[150px] btn-sm">
               Start stream
             </Link>
           )}

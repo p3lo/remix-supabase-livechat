@@ -12,8 +12,6 @@ interface StreamerVideoProps {
 export function StreamerVideo({ myinfo, room }: StreamerVideoProps) {
   const { cameraPublication, microphonePublication, isLocal } = useParticipant(myinfo!);
   const micRef = React.useRef<HTMLAudioElement>(null);
-  const [isAudioEnabled, setIsAudioEnabled] = React.useState(true);
-  const [isVideoEnabled, setIsVideoEnabled] = React.useState(true);
   const didMountRef = React.useRef(false);
 
   React.useEffect(
@@ -53,29 +51,6 @@ export function StreamerVideo({ myinfo, room }: StreamerVideoProps) {
     }
   }, [cameraPublication?.videoTrack, cameraPublication?.isMuted]);
 
-  const toggleAudio = async () => {
-    if (!room) return;
-    const enabled = room.localParticipant.isMicrophoneEnabled;
-    await room.localParticipant.setMicrophoneEnabled(!enabled);
-    setIsAudioEnabled(!enabled);
-  };
-
-  const toggleVideo = async () => {
-    if (!room) return;
-    const enabled = room.localParticipant.isCameraEnabled;
-    await room.localParticipant.setCameraEnabled(!enabled);
-    setIsVideoEnabled(!enabled);
-  };
-
-  const leaveRoom = async () => {
-    if (!room) return;
-    await Promise.all([
-      room.localParticipant.setCameraEnabled(false),
-      room.localParticipant.setMicrophoneEnabled(false),
-    ]);
-    room.disconnect();
-  };
-
   return (
     <>
       <div className={`h-full w-full  overflow-hidden rounded-lg bg-gray-700`}>
@@ -111,17 +86,6 @@ export function StreamerVideo({ myinfo, room }: StreamerVideoProps) {
             </div>
           </div>
         )}
-      </div>
-      <div className="flex space-x-2">
-        <button className="p-1 border border-gray-500/50" onClick={toggleAudio}>
-          {isAudioEnabled ? 'Mute Audio' : 'Unmute Audio'}
-        </button>
-        <button className="p-1 border border-gray-500/50" onClick={toggleVideo}>
-          {isVideoEnabled ? 'Mute Video' : 'Unmute Video'}
-        </button>
-        <button className="p-1 border border-gray-500/50" onClick={leaveRoom}>
-          End Stream
-        </button>
       </div>
     </>
   );

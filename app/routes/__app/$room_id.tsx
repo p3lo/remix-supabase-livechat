@@ -59,35 +59,25 @@ export async function loader({ request, params }: LoaderArgs) {
         },
       });
       if (user?.nickname === roomName && user?.role === 'STREAMER') {
-        const devices = await db.devices.findUnique({
-          where: {
-            userId: user.id,
-          },
-          select: {
-            videoDevice: true,
-            audioDevice: true,
-          },
-        });
-        if (!devices) return redirect('/stream-setup');
         const token = getAccessToken(true, user.nickname, roomName);
-        return json({ user, user_type: 'streamer', devices, token, server: LIVEKIT_SERVER });
+        return json({ user, user_type: 'streamer', token, server: LIVEKIT_SERVER });
       } else {
         const token = getAccessToken(false, user!.nickname, roomName);
-        return json({ user, user_type: 'viewer', devices: null, token, server: LIVEKIT_SERVER });
+        return json({ user, user_type: 'viewer', token, server: LIVEKIT_SERVER });
       }
     } else {
       const token = getAccessToken(false, 'guest', roomName);
-      return json({ user: null, user_type: 'viewer', devices: null, token, server: LIVEKIT_SERVER });
+      return json({ user: null, user_type: 'viewer', token, server: LIVEKIT_SERVER });
     }
   }
 }
 
 export default function Room() {
-  const { user, user_type, devices, token, server } = useLoaderData<typeof loader>();
+  const { user, user_type, token, server } = useLoaderData<typeof loader>();
 
   return (
     <div className="w-full py-6 mx-auto sm:w-[90%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[45%]">
-      {user_type === 'streamer' && <Streamer user={user!} devices={devices!} token={token} server={server} />}
+      {user_type === 'streamer' && <Streamer user={user!} token={token} server={server} />}
       {/* {user_type === 'streamer' && (
         <StreamerSettings
           url={server}
