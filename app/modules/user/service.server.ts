@@ -59,7 +59,7 @@ export async function createUserAccount(email: string, password: string): Promis
   return authSession;
 }
 
-function makeNick(length: number) {
+export function makeNick(length: number) {
   let result = '';
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   const charactersLength = characters.length;

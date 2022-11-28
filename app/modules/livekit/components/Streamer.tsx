@@ -35,11 +35,9 @@ export function Streamer({
   server: string;
 }) {
   const [myInfo, setMyInfo] = React.useState<LocalParticipant | undefined>(undefined);
-  const { room, participants, connect, connectionState } = useRoom(roomOptions);
+  const { room, connect, connectionState } = useRoom(roomOptions);
   const [allAudioDevices, setAllAudioDevices] = React.useState<MediaDeviceInfo[]>();
   const [allVideoDevices, setAllVideoDevices] = React.useState<MediaDeviceInfo[]>();
-  const [currentAudioDevice, setCurrentAudioDevice] = React.useState<MediaDeviceInfo>();
-  const [currentVideoDevice, setCurrentVideoDevice] = React.useState<MediaDeviceInfo>();
   const [audioDevicesList, setAudioDevicesList] = React.useState<string[]>([]);
   const [videoDevicesList, setVideoDevicesList] = React.useState<string[]>([]);
   const [isAudioEnabled, setIsAudioEnabled] = React.useState(true);
@@ -49,14 +47,12 @@ export function Streamer({
     (async () => {
       const devices = await getAudioDevices().then((value) => value);
       setAllAudioDevices(devices);
-      setCurrentAudioDevice(devices[0]);
       const devicesList = devices.map((device) => device.label);
       setAudioDevicesList(devicesList);
     })();
     (async () => {
       const devices = await getVideoDevices().then((value) => value);
       setAllVideoDevices(devices);
-      setCurrentVideoDevice(devices[0]);
       const devicesList = devices.map((device) => device.label);
       setVideoDevicesList(devicesList);
     })();
@@ -85,7 +81,6 @@ export function Streamer({
 
   function changeVideoSource(source: string) {
     const index = allVideoDevices?.findIndex((device) => device.label === source);
-    setCurrentVideoDevice(allVideoDevices![index!]);
     if (room) {
       room.switchActiveDevice('videoinput', allVideoDevices![index!].deviceId);
     }
@@ -93,7 +88,6 @@ export function Streamer({
 
   function changeAudioSource(source: string) {
     const index = allAudioDevices?.findIndex((device) => device.label === source);
-    setCurrentAudioDevice(allAudioDevices![index!]);
     if (room) {
       room.switchActiveDevice('audioinput', allAudioDevices![index!].deviceId);
     }
