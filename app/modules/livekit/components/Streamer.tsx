@@ -35,7 +35,7 @@ export function Streamer({
   server: string;
 }) {
   const [myInfo, setMyInfo] = React.useState<LocalParticipant | undefined>(undefined);
-  const { room, participants, connect } = useRoom(roomOptions);
+  const { room, participants, connect, connectionState } = useRoom(roomOptions);
   const [allAudioDevices, setAllAudioDevices] = React.useState<MediaDeviceInfo[]>();
   const [allVideoDevices, setAllVideoDevices] = React.useState<MediaDeviceInfo[]>();
   const [currentAudioDevice, setCurrentAudioDevice] = React.useState<MediaDeviceInfo>();
@@ -139,12 +139,13 @@ export function Streamer({
           <p className="text-xs font-bold text-red-600">My name: {myInfo.identity}</p>
           <p className="text-xs font-bold text-red-600">My sid: {myInfo.sid}</p>
           <div className="flex flex-col space-y-1">
-            <div className="flex border border-gray-500/50 py-1 px-2 justify-evenly border-dashed rounded-lg">
+            <div className="flex px-2 py-1 border border-dashed rounded-lg border-gray-500/50 justify-evenly">
               <div className="w-full max-w-xs form-control">
                 <label className="label">
                   <span className="text-xs label-text">Select camera</span>
                 </label>
                 <select
+                  disabled={connectionState !== ConnectionState.Connected}
                   className="text-xs select-bordered select select-sm"
                   onChange={(e) => changeVideoSource(e.currentTarget.value)}
                 >
@@ -158,6 +159,7 @@ export function Streamer({
                   <span className="text-xs label-text">Select microphone</span>
                 </label>
                 <select
+                  disabled={connectionState !== ConnectionState.Connected}
                   className="text-xs select-bordered select select-sm"
                   onChange={(e) => changeAudioSource(e.currentTarget.value)}
                 >
@@ -168,14 +170,26 @@ export function Streamer({
               </div>
             </div>
             <StreamerVideo myinfo={myInfo} room={room} />
-            <div className="flex border border-gray-500/50 py-1 px-2 justify-evenly border-dashed rounded-lg">
-              <button className="p-1 border border-gray-500/50 w-[150px]" onClick={toggleAudio}>
+            <div className="flex px-2 py-1 border border-dashed rounded-lg border-gray-500/50 justify-evenly">
+              <button
+                className="btn btn-outline btn-sm w-[150px]"
+                onClick={toggleAudio}
+                disabled={connectionState !== ConnectionState.Connected}
+              >
                 {isAudioEnabled ? 'Mute Audio' : 'Unmute Audio'}
               </button>
-              <button className="p-1 border border-gray-500/50 w-[150px]" onClick={toggleVideo}>
+              <button
+                className="btn btn-outline btn-sm w-[150px]"
+                onClick={toggleVideo}
+                disabled={connectionState !== ConnectionState.Connected}
+              >
                 {isVideoEnabled ? 'Mute Video' : 'Unmute Video'}
               </button>
-              <button className="p-1 border border-gray-500/50 w-[150px]" onClick={leaveRoom}>
+              <button
+                className="btn btn-outline btn-sm w-[150px]"
+                onClick={leaveRoom}
+                disabled={connectionState !== ConnectionState.Connected}
+              >
                 End Stream
               </button>
             </div>
