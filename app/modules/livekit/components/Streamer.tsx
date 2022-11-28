@@ -35,7 +35,7 @@ export function Streamer({
   server: string;
 }) {
   const [myInfo, setMyInfo] = React.useState<LocalParticipant | undefined>(undefined);
-  const { room, participants, connect } = useRoom(roomOptions);
+  const { room, participants, connect, connectionState } = useRoom(roomOptions);
   const [allAudioDevices, setAllAudioDevices] = React.useState<MediaDeviceInfo[]>();
   const [allVideoDevices, setAllVideoDevices] = React.useState<MediaDeviceInfo[]>();
   const [currentAudioDevice, setCurrentAudioDevice] = React.useState<MediaDeviceInfo>();
@@ -44,6 +44,7 @@ export function Streamer({
   const [videoDevicesList, setVideoDevicesList] = React.useState<string[]>([]);
   const [isAudioEnabled, setIsAudioEnabled] = React.useState(true);
   const [isVideoEnabled, setIsVideoEnabled] = React.useState(true);
+  const [isConnected, setIsConnected] = React.useState(false);
 
   async function init() {
     (async () => {
@@ -74,6 +75,14 @@ export function Streamer({
     const info = room?.localParticipant;
     setMyInfo(info);
   }
+
+  React.useEffect(() => {
+    if (connectionState === ConnectionState.Connected) {
+      setIsConnected(true);
+    } else {
+      setIsConnected(false);
+    }
+  }, [connectionState]);
 
   React.useEffect(() => {
     init().catch(console.error);
@@ -145,6 +154,7 @@ export function Streamer({
                   <span className="text-xs label-text">Select camera</span>
                 </label>
                 <select
+                  disabled={!isConnected}
                   className="text-xs select-bordered select select-sm"
                   onChange={(e) => changeVideoSource(e.currentTarget.value)}
                 >
@@ -158,6 +168,7 @@ export function Streamer({
                   <span className="text-xs label-text">Select microphone</span>
                 </label>
                 <select
+                  disabled={!isConnected}
                   className="text-xs select-bordered select select-sm"
                   onChange={(e) => changeAudioSource(e.currentTarget.value)}
                 >
@@ -169,13 +180,13 @@ export function Streamer({
             </div>
             <StreamerVideo myinfo={myInfo} room={room} />
             <div className="flex border border-gray-500/50 py-1 px-2 justify-evenly border-dashed rounded-lg">
-              <button className="p-1 border border-gray-500/50 w-[150px]" onClick={toggleAudio}>
+              <button disabled={!isConnected} className="p-1 border border-gray-500/50 w-[150px]" onClick={toggleAudio}>
                 {isAudioEnabled ? 'Mute Audio' : 'Unmute Audio'}
               </button>
-              <button className="p-1 border border-gray-500/50 w-[150px]" onClick={toggleVideo}>
+              <button disabled={!isConnected} className="p-1 border border-gray-500/50 w-[150px]" onClick={toggleVideo}>
                 {isVideoEnabled ? 'Mute Video' : 'Unmute Video'}
               </button>
-              <button className="p-1 border border-gray-500/50 w-[150px]" onClick={leaveRoom}>
+              <button disabled={!isConnected} className="p-1 border border-gray-500/50 w-[150px]" onClick={leaveRoom}>
                 End Stream
               </button>
             </div>
