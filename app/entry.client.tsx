@@ -9,7 +9,7 @@ import { hydrateRoot } from 'react-dom/client';
 import { I18nClientProvider, initI18nextClient } from './integrations/i18n'; // your i18n configuration file
 import ClientStyleContext from './modules/mui/ClientStyleContext';
 import createEmotionCache from './modules/mui/createEmotionCache';
-import { theme } from './modules/mui/theme';
+import { dark } from './modules/mui/theme';
 
 interface ClientCacheProviderProps {
   children: React.ReactNode;
@@ -40,7 +40,7 @@ function hydrate() {
       <React.StrictMode>
         <I18nClientProvider>
           <ClientCacheProvider>
-            <ThemeProvider theme={theme}>
+            <ThemeProvider theme={dark}>
               <CssBaseline />
               <RemixBrowser />
             </ThemeProvider>

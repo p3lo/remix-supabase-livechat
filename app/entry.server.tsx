@@ -14,7 +14,7 @@ import { I18nextProvider } from 'react-i18next';
 
 import { createI18nextServerInstance } from './integrations/i18n';
 import createEmotionCache from './modules/mui/createEmotionCache';
-import { theme } from './modules/mui/theme';
+import { dark } from './modules/mui/theme';
 
 const ABORT_DELAY = 5000;
 
@@ -32,7 +32,7 @@ export default async function handleRequest(
     return (
       <I18nextProvider i18n={instance}>
         <CacheProvider value={cache}>
-          <ThemeProvider theme={theme}>
+          <ThemeProvider theme={dark}>
             {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
             <CssBaseline />
             <RemixServer context={remixContext} url={request.url} />
