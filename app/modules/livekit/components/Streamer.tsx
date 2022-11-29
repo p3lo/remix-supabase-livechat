@@ -5,6 +5,7 @@ import type { LocalParticipant, Room, RoomConnectOptions, RoomOptions } from 'li
 import { ConnectionState, VideoPresets } from 'livekit-client';
 
 import { getAudioDevices, getVideoDevices, setMediaEnabled } from '../service.client';
+import { StreamerChat } from './StreamerChat';
 import { StreamerVideo } from './StreamerVideo';
 
 const roomOptions: RoomOptions = {
@@ -187,6 +188,7 @@ export function Streamer({
                 End Stream
               </button>
             </div>
+            {room && <StreamerChat room={room} />}
           </div>
         </div>
       ) : null}
