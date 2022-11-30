@@ -1,12 +1,14 @@
 import React from 'react';
 
-import type { LinksFunction, LoaderArgs } from '@remix-run/node';
+import type { ActionArgs, LinksFunction, LoaderArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
+import { useDataRefresh, useEventSource } from 'remix-utils';
 import invariant from 'tiny-invariant';
 
 import { db } from '~/database';
 import { getAuthSession } from '~/modules/auth';
+import { emitter, EVENTS } from '~/modules/chat/emitter.server';
 import { getAccessToken, getRoom } from '~/modules/livekit';
 import { Streamer } from '~/modules/livekit/components/Streamer';
 import { Viewer } from '~/modules/livekit/components/Viewer';
@@ -33,22 +35,30 @@ export async function loader({ request, params }: LoaderArgs) {
         },
       });
       if (user?.nickname === roomName && user?.role === 'STREAMER') {
-        const devices = await db.devices.findUnique({
+        const token = getAccessToken(true, user.nickname, roomName);
+        const messages = await db.chat.findMany({
+          take: 40,
           where: {
-            userId: user.id,
+            room: roomName,
           },
-          select: {
-            videoDevice: true,
-            audioDevice: true,
+          orderBy: {
+            createdAt: 'desc',
           },
         });
-        if (!devices) return redirect('/stream-setup');
-        const token = getAccessToken(true, user.nickname, roomName);
-        return json({ user, user_type: 'streamer', devices, token, server: LIVEKIT_SERVER });
+        return json({ user, user_type: 'streamer', token, server: LIVEKIT_SERVER, messages });
       }
     }
     return redirect('/');
   } else {
+    const messages = await db.chat.findMany({
+      take: 40,
+      where: {
+        room: roomName,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
     if (session) {
       user = await db.user.findUnique({
         where: {
@@ -62,20 +72,49 @@ export async function loader({ request, params }: LoaderArgs) {
       });
       if (user?.nickname === roomName && user?.role === 'STREAMER') {
         const token = getAccessToken(true, user.nickname, roomName);
-        return json({ user, user_type: 'streamer', token, server: LIVEKIT_SERVER });
+        return json({ user, user_type: 'streamer', token, server: LIVEKIT_SERVER, messages });
       } else {
         const token = getAccessToken(false, user!.nickname, roomName);
-        return json({ user, user_type: 'viewer', token, server: LIVEKIT_SERVER });
+        return json({ user, user_type: 'viewer', token, server: LIVEKIT_SERVER, messages });
       }
     } else {
       const token = getAccessToken(false, makeNick(10), roomName);
-      return json({ user: null, user_type: 'viewer', token, server: LIVEKIT_SERVER });
+      return json({ user: null, user_type: 'viewer', token, server: LIVEKIT_SERVER, messages });
     }
   }
 }
 
+export async function action({ request }: ActionArgs) {
+  const formData = await request.formData();
+  const message = formData.get('message');
+  if (message) {
+    const room = formData.get('room');
+    const user_id = formData.get('user_id');
+    if (room && user_id) {
+      let new_message = await db.chat.create({
+        data: {
+          userId: user_id.toString(),
+          message: message.toString(),
+          room: room.toString(),
+        },
+      });
+      emitter.emit(EVENTS.MESSAGE_ADDED, new_message.id.toString());
+    }
+  }
+  return null;
+}
+
 export default function Room() {
   const { user, user_type, token, server } = useLoaderData<typeof loader>();
+
+  let lastMessageId = useEventSource('/chat-subscribe');
+  // let { refresh } = useDataRefresh();
+  React.useEffect(() => {
+    console.log('lastMessageId', lastMessageId);
+    // refresh();
+  }, [lastMessageId]);
+
+  console.log('lastMessageId out of effect', lastMessageId);
 
   return (
     <div className="w-full py-6 mx-auto sm:w-[90%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[45%]">

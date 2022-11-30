@@ -188,7 +188,7 @@ export function Streamer({
                 End Stream
               </button>
             </div>
-            {room && <StreamerChat room={room} />}
+            {room && <StreamerChat room={room} user={user} />}
           </div>
         </div>
       ) : null}
