@@ -8,7 +8,7 @@ import invariant from 'tiny-invariant';
 
 import { db } from '~/database';
 import { getAuthSession } from '~/modules/auth';
-import { emitter, EVENTS } from '~/modules/chat/emitter.server';
+import { emitter } from '~/modules/chat/emitter.server';
 import { getAccessToken, getRoom } from '~/modules/livekit';
 import { Streamer } from '~/modules/livekit/components/Streamer';
 import { Viewer } from '~/modules/livekit/components/Viewer';
@@ -98,16 +98,26 @@ export async function action({ request }: ActionArgs) {
           room: room.toString(),
         },
       });
-      emitter.emit(EVENTS.MESSAGE_ADDED, new_message.id.toString());
+      emitter.emit('new_message', new_message.id.toString());
     }
   }
-  return null;
+  try {
+    emitter.emit('new_message', 'test');
+    return json(null, { status: 201 });
+  } catch (error) {
+    if (error instanceof Error) {
+      return json({ error: error.message }, { status: 400 });
+    }
+    throw error;
+  }
 }
 
 export default function Room() {
   const { user, user_type, token, server } = useLoaderData<typeof loader>();
 
-  let lastMessageId = useEventSource('/chat-subscribe');
+  let lastMessageId = useEventSource('/chat/subscribe', {
+    event: 'new-message',
+  });
   // let { refresh } = useDataRefresh();
   React.useEffect(() => {
     console.log('lastMessageId', lastMessageId);

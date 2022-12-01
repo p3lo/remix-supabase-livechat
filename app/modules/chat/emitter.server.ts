@@ -1,5 +1,3 @@
-import { EventEmitter } from 'events';
-export const EVENTS = {
-  MESSAGE_ADDED: 'message',
-};
+import { EventEmitter } from 'node:events';
+
 export let emitter = new EventEmitter();
