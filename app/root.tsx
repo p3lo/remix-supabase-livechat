@@ -33,6 +33,11 @@ export const loader: LoaderFunction = async ({ request }) => {
   );
 };
 
+export function action() {
+  // this is for useRevalidator
+  return { ok: true };
+}
+
 export default function App() {
   const { env, locale } = useLoaderData<typeof loader>();
   const { i18n } = useTranslation();

@@ -1,10 +1,13 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
-import { useDataRefresh } from 'remix-utils';
+import { useFetcher } from '@remix-run/react';
 
-// FIXME: This is unneeded after https://github.com/remix-run/remix/issues/4485
 export function useRevalidator() {
-  const { refresh } = useDataRefresh();
+  const { submit } = useFetcher();
 
-  return useMemo(() => ({ revalidate: refresh }), [refresh]);
+  const revalidate = useCallback(() => {
+    submit(null, { action: '/', method: 'post' });
+  }, [submit]);
+
+  return useMemo(() => ({ revalidate }), [revalidate]);
 }

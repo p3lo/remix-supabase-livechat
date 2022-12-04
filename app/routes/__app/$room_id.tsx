@@ -2,13 +2,13 @@ import React from 'react';
 
 import type { ActionArgs, LinksFunction, LoaderArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { useActionData, useLoaderData } from '@remix-run/react';
 import { useDataRefresh, useEventSource } from 'remix-utils';
 import invariant from 'tiny-invariant';
 
 import { db } from '~/database';
 import { getAuthSession } from '~/modules/auth';
-import { emitter } from '~/modules/chat/emitter.server';
+import { chatEmitter } from '~/modules/chat/emitter.server';
 import { getAccessToken, getRoom } from '~/modules/livekit';
 import { Streamer } from '~/modules/livekit/components/Streamer';
 import { Viewer } from '~/modules/livekit/components/Viewer';
@@ -98,33 +98,22 @@ export async function action({ request }: ActionArgs) {
           room: room.toString(),
         },
       });
-      emitter.emit('new_message', new_message.id.toString());
+      try {
+        chatEmitter.emit('message', new_message.id.toString());
+        return json(null, { status: 201 });
+      } catch (error) {
+        if (error instanceof Error) {
+          return json({ error: error.message }, { status: 400 });
+        }
+        throw error;
+      }
     }
   }
-  try {
-    emitter.emit('new_message', 'test');
-    return json(null, { status: 201 });
-  } catch (error) {
-    if (error instanceof Error) {
-      return json({ error: error.message }, { status: 400 });
-    }
-    throw error;
-  }
+  return json(null, { status: 201 });
 }
 
 export default function Room() {
   const { user, user_type, token, server } = useLoaderData<typeof loader>();
-
-  let lastMessageId = useEventSource('/chat/subscribe', {
-    event: 'new-message',
-  });
-  // let { refresh } = useDataRefresh();
-  React.useEffect(() => {
-    console.log('lastMessageId', lastMessageId);
-    // refresh();
-  }, [lastMessageId]);
-
-  console.log('lastMessageId out of effect', lastMessageId);
 
   return (
     <div className="w-full py-6 mx-auto sm:w-[90%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[45%]">

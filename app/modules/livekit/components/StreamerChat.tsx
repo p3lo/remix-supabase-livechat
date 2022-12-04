@@ -1,9 +1,10 @@
 import React from 'react';
 
 import { useFetcher, useMatches } from '@remix-run/react';
-import type { Participant, RemoteParticipant, Room } from 'livekit-client';
-import { RoomEvent, DataPacket_Kind } from 'livekit-client';
-import { useDataRefresh, useEventSource } from 'remix-utils';
+import type { Room } from 'livekit-client';
+import { useEventSource } from 'remix-utils';
+
+import { useRevalidator } from '~/modules/chat/use-revalidator';
 
 interface MessageChat {
   id: number;
@@ -20,15 +21,15 @@ export function StreamerChat({ room, user }: { room: Room; user: { id: string; n
   const [message, setMessage] = React.useState<string>('');
 
   // let { refresh } = useDataRefresh();
-  // let lastMessageId = useEventSource('/chat/subscribe', {
-  //   event: 'new-message',
-  // });
-  // console.log('lastMessageId out of effect', lastMessageId);
+  let lastMessageId = useEventSource('/chat/subscribe', {
+    event: 'message-new',
+  });
 
-  // React.useEffect(() => {
-  //   console.log('lastMessageId', lastMessageId);
-  //   refresh();
-  // }, [lastMessageId]);
+  let refresh = useRevalidator();
+
+  React.useEffect(() => {
+    refresh.revalidate();
+  }, [lastMessageId]);
 
   function sendMessage() {
     send_message.submit({ message, room: room.name, user_id: user.id }, { method: 'post', action: `/${room.name}` });
