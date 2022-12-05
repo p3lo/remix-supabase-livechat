@@ -41,6 +41,13 @@ export async function loader({ request, params }: LoaderArgs) {
           where: {
             room: roomName,
           },
+          include: {
+            user: {
+              select: {
+                nickname: true,
+              },
+            },
+          },
           orderBy: {
             createdAt: 'desc',
           },
@@ -54,6 +61,13 @@ export async function loader({ request, params }: LoaderArgs) {
       take: 40,
       where: {
         room: roomName,
+      },
+      include: {
+        user: {
+          select: {
+            nickname: true,
+          },
+        },
       },
       orderBy: {
         createdAt: 'desc',

@@ -2,33 +2,34 @@ import React from 'react';
 
 import { useFetcher, useMatches } from '@remix-run/react';
 import type { Room } from 'livekit-client';
-import { useEventSource } from 'remix-utils';
+import { useEventSource, useDataRefresh } from 'remix-utils';
 
-import { useRevalidator } from '~/modules/chat/use-revalidator';
+import { ChatMessage } from './ChatMessage';
 
-interface MessageChat {
+export interface MessageChat {
   id: number;
   createdAt: Date;
   updatedAt: Date;
   room: string;
   message: string;
+  user: {
+    nickname: string;
+  };
 }
 
 export function StreamerChat({ room, user }: { room: Room; user: { id: string; nickname: string; role: string } }) {
   const get_messages: MessageChat[] = useMatches()[2].data.messages;
   const send_message = useFetcher();
-  // const [chat, setChat] = React.useState<string[]>([]);
   const [message, setMessage] = React.useState<string>('');
 
-  // let { refresh } = useDataRefresh();
   let lastMessageId = useEventSource('/chat/subscribe', {
     event: 'message-new',
   });
 
-  let refresh = useRevalidator();
+  let { refresh } = useDataRefresh();
 
   React.useEffect(() => {
-    refresh.revalidate();
+    refresh();
   }, [lastMessageId]);
 
   function sendMessage() {
@@ -39,11 +40,9 @@ export function StreamerChat({ room, user }: { room: Room; user: { id: string; n
   return (
     <div className="w-full h-[200px] border border-gray-500/50 py-2 px-1">
       <div className="flex flex-col space-y-1">
-        <div className="w-full h-[150px] overflow-y-scroll flex flex-col">
+        <div className="h-[150px] overflow-y-scroll flex flex-col space-y-1">
           {get_messages.map((message) => (
-            <p key={message.id} className="flex flex-row space-x-2">
-              {message.message}
-            </p>
+            <ChatMessage key={message.id} message={message} room_name={room.name} />
           ))}
         </div>
         <div className="flex space-x-1">
