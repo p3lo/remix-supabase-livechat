@@ -45,6 +45,7 @@ export async function loader({ request, params }: LoaderArgs) {
             user: {
               select: {
                 nickname: true,
+                chat_color: true,
               },
             },
           },
@@ -66,6 +67,7 @@ export async function loader({ request, params }: LoaderArgs) {
         user: {
           select: {
             nickname: true,
+            chat_color: true,
           },
         },
       },

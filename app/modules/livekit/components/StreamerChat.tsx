@@ -14,6 +14,7 @@ export interface MessageChat {
   message: string;
   user: {
     nickname: string;
+    chat_color: string;
   };
 }
 

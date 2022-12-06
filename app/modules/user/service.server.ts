@@ -9,17 +9,28 @@ export async function getUserByEmail(email: User['email']) {
 
 async function createUser({ email, userId }: Pick<AuthSession, 'userId' | 'email'>) {
   const nickname = makeNick(7);
+  const chat_color = randomColor();
   return db.user
     .create({
       data: {
         email,
         id: userId,
+        chat_color,
         nickname,
       },
     })
     .then((user) => user)
     .catch(() => null);
 }
+
+const randomColor = () => {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
 
 export async function tryCreateUser({ email, userId }: Pick<AuthSession, 'userId' | 'email'>) {
   const user = await createUser({
