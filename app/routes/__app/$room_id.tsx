@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { useRoom } from '@livekit/react-core';
 import type { ActionArgs, LinksFunction, LoaderArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
 import { useActionData, useLoaderData } from '@remix-run/react';
@@ -11,6 +12,7 @@ import { getAuthSession } from '~/modules/auth';
 import { chatEmitter } from '~/modules/chat/emitter.server';
 import { getAccessToken, getRoom } from '~/modules/livekit';
 import { Streamer } from '~/modules/livekit/components/Streamer';
+import { StreamerChat } from '~/modules/livekit/components/StreamerChat';
 import { Viewer } from '~/modules/livekit/components/Viewer';
 import { makeNick } from '~/modules/user';
 import { LIVEKIT_SERVER } from '~/utils';
@@ -53,7 +55,7 @@ export async function loader({ request, params }: LoaderArgs) {
             createdAt: 'desc',
           },
         });
-        return json({ user, user_type: 'streamer', token, server: LIVEKIT_SERVER, messages });
+        return json({ user, user_type: 'streamer', token, server: LIVEKIT_SERVER, messages, roomName });
       }
     }
     return redirect('/');
@@ -88,14 +90,14 @@ export async function loader({ request, params }: LoaderArgs) {
       });
       if (user?.nickname === roomName && user?.role === 'STREAMER') {
         const token = getAccessToken(true, user.nickname, roomName);
-        return json({ user, user_type: 'streamer', token, server: LIVEKIT_SERVER, messages });
+        return json({ user, user_type: 'streamer', token, server: LIVEKIT_SERVER, messages, roomName });
       } else {
         const token = getAccessToken(false, user!.nickname, roomName);
-        return json({ user, user_type: 'viewer', token, server: LIVEKIT_SERVER, messages });
+        return json({ user, user_type: 'viewer', token, server: LIVEKIT_SERVER, messages, roomName });
       }
     } else {
       const token = getAccessToken(false, makeNick(10), roomName);
-      return json({ user: null, user_type: 'viewer', token, server: LIVEKIT_SERVER, messages });
+      return json({ user: null, user_type: 'viewer', token, server: LIVEKIT_SERVER, messages, roomName });
     }
   }
 }
@@ -129,12 +131,17 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function Room() {
-  const { user, user_type, token, server } = useLoaderData<typeof loader>();
+  const { user, user_type, token, server, roomName } = useLoaderData<typeof loader>();
 
   return (
-    <div className="w-full py-6 mx-auto sm:w-[90%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[45%]">
+    <div className="w-full h-screen py-6 mx-auto sm:w-[90%] md:w-[95%] lg:w-[85%] xl:w-[75%] 2xl:w-[70%] border border-spacing-1 border-gray-500/50 p-3 m-3">
       {user_type === 'streamer' ? (
-        <Streamer user={user!} token={token} server={server} />
+        <div className="grid grid-cols-3 h-[55vh]">
+          <div className="col-span-2">
+            <Streamer user={user!} token={token} server={server} />
+          </div>
+          <StreamerChat room={roomName} user={user!} />
+        </div>
       ) : (
         <Viewer user={user!} token={token} server={server} />
       )}

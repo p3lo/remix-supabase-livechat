@@ -53,7 +53,7 @@ export function StreamerVideo({ myinfo, room }: StreamerVideoProps) {
 
   return (
     <>
-      <div className={`h-full w-full  overflow-hidden rounded-lg bg-gray-700`}>
+      <div className={`h-[43vh] w-full  overflow-hidden rounded-lg bg-gray-700`}>
         <audio ref={micRef} autoPlay muted={isLocal} />
         {!cameraPublication?.isMuted ? (
           <ReactPlayer

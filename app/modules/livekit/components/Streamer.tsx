@@ -131,11 +131,9 @@ export function Streamer({
     <>
       {myInfo ? (
         <div className="flex flex-col ">
-          <p className="text-xs font-bold text-red-600">My name: {myInfo.identity}</p>
-          <p className="text-xs font-bold text-red-600">My sid: {myInfo.sid}</p>
           <div className="flex flex-col space-y-1">
             <div className="flex px-2 py-1 border border-dashed rounded-lg border-gray-500/50 justify-evenly">
-              <div className="w-full max-w-xs form-control">
+              <div className="w-[45%] form-control">
                 <label className="label">
                   <span className="text-xs label-text">Select camera</span>
                 </label>
@@ -149,7 +147,7 @@ export function Streamer({
                   ))}
                 </select>
               </div>
-              <div className="w-full max-w-xs form-control">
+              <div className="w-[45%] form-control">
                 <label className=" label">
                   <span className="text-xs label-text">Select microphone</span>
                 </label>
@@ -188,7 +186,6 @@ export function Streamer({
                 End Stream
               </button>
             </div>
-            {room && <StreamerChat room={room} user={user} />}
           </div>
         </div>
       ) : null}
