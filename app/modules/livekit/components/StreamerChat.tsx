@@ -23,7 +23,7 @@ export function StreamerChat({ room, user }: { room: string; user: { id: string;
   const send_message = useFetcher();
   const [message, setMessage] = React.useState<string>('');
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
-  console.log(get_messages.slice().reverse());
+
   const scrollToBottom = (element: HTMLDivElement) => {
     element.scrollTo(0, element.scrollHeight);
   };
