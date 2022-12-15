@@ -4,7 +4,6 @@ import type { LinksFunction, LoaderFunction, MetaFunction } from '@remix-run/nod
 import { json } from '@remix-run/node';
 import { Link, Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
-import { useChangeLanguage } from 'remix-i18next';
 
 import { i18nextServer } from '~/integrations/i18n';
 
@@ -36,6 +35,13 @@ export const loader: LoaderFunction = async ({ request }) => {
 export function action() {
   // this is for useRevalidator
   return { ok: true };
+}
+
+export function useChangeLanguage(locale: string) {
+  let { i18n } = useTranslation();
+  React.useEffect(() => {
+    i18n.changeLanguage(locale);
+  }, [locale, i18n]);
 }
 
 export default function App() {
