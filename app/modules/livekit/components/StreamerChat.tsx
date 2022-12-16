@@ -54,32 +54,30 @@ export function StreamerChat({ room, user }: { room: string; user: { id: string;
   };
 
   return (
-    <div className="w-full border border-gray-500/50 py-2 px-1 ">
-      <div className="flex flex-col space-y-1">
-        <div
-          ref={messagesEndRef}
-          className=" flex flex-col h-[50vh] space-y-1 overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-400 scrollbar-thumb-rounded-full scrollbar-track-rounded-full"
-        >
-          {get_messages
-            .slice()
-            .reverse()
-            .map((message) => (
-              <ChatMessage key={message.id} message={message} room_name={room} />
-            ))}
-        </div>
-        <div className="flex space-x-1">
-          <input
-            type="text"
-            placeholder="Message"
-            className="w-full input input-bordered input-sm"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-          <button className="btn btn-outline btn-info btn-sm" onClick={sendMessage}>
-            Send
-          </button>
-        </div>
+    <div className="flex flex-col h-full space-y-2 border border-gray-500/50 py-2 px-1 overflow-y-hidden">
+      <div
+        ref={messagesEndRef}
+        className=" flex flex-col space-y-1 overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-400 scrollbar-thumb-rounded-full scrollbar-track-rounded-full "
+      >
+        {get_messages
+          .slice()
+          .reverse()
+          .map((message) => (
+            <ChatMessage key={message.id} message={message} room_name={room} />
+          ))}
+      </div>
+      <div className="flex space-x-1">
+        <input
+          type="text"
+          placeholder="Message"
+          className="w-full input input-bordered input-sm"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
+        <button className="btn btn-outline btn-info btn-sm" onClick={sendMessage}>
+          Send
+        </button>
       </div>
     </div>
   );

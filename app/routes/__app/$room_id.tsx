@@ -134,13 +134,15 @@ export default function Room() {
   const { user, user_type, token, server, roomName } = useLoaderData<typeof loader>();
 
   return (
-    <div className="w-full h-screen py-6 mx-auto sm:w-[90%] md:w-[95%] lg:w-[85%] xl:w-[75%] 2xl:w-[70%] border border-spacing-1 border-gray-500/50 p-3 m-3">
+    <div className="flex flex-col w-full h-full py-3 mx-auto sm:w-[90%] md:w-[95%] lg:w-[85%] xl:w-[75%] 2xl:w-[70%] border border-spacing-1 border-gray-500/50 p-1 m-3">
       {user_type === 'streamer' ? (
-        <div className="grid grid-cols-3 h-[55vh]">
-          <div className="col-span-2">
+        <div className="flex flex-col md:items-stretch md:h-[70vh] h-full md:flex-row border border-spacing-1 border-gray-500/50 p-1 gap-1">
+          <div className="grow min-h-full">
             <Streamer user={user!} token={token} server={server} />
           </div>
-          <StreamerChat room={roomName} user={user!} />
+          <div className="md:w-[400px] md:grow-0 grow h-[300px] md:h-full">
+            <StreamerChat room={roomName} user={user!} />
+          </div>
         </div>
       ) : (
         <Viewer user={user!} token={token} server={server} />

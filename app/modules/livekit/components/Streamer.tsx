@@ -130,62 +130,63 @@ export function Streamer({
   return (
     <>
       {myInfo ? (
-        <div className="flex flex-col ">
-          <div className="flex flex-col space-y-1">
-            <div className="flex px-2 py-1 border border-dashed rounded-lg border-gray-500/50 justify-evenly">
-              <div className="w-[45%] form-control">
-                <label className="label">
-                  <span className="text-xs label-text">Select camera</span>
-                </label>
-                <select
-                  disabled={connectionState !== ConnectionState.Connected}
-                  className="text-xs select-bordered select select-sm"
-                  onChange={(e) => changeVideoSource(e.currentTarget.value)}
-                >
-                  {videoDevicesList.map((device) => (
-                    <option key={device}>{device}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="w-[45%] form-control">
-                <label className=" label">
-                  <span className="text-xs label-text">Select microphone</span>
-                </label>
-                <select
-                  disabled={connectionState !== ConnectionState.Connected}
-                  className="text-xs select-bordered select select-sm"
-                  onChange={(e) => changeAudioSource(e.currentTarget.value)}
-                >
-                  {audioDevicesList.map((device) => (
-                    <option key={device}>{device}</option>
-                  ))}
-                </select>
-              </div>
+        <div className="flex flex-col space-y-1 h-full relative w-full">
+          <div className="w-full flex flex-col md:flex-row px-2 py-1 border border-dashed rounded-lg border-gray-500/50 justify-evenly">
+            <div className="w-full md:w-[45%] form-control">
+              <label className="label">
+                <span className="text-xs label-text">Select camera</span>
+              </label>
+              <select
+                disabled={connectionState !== ConnectionState.Connected}
+                className="text-xs select-bordered select select-sm"
+                onChange={(e) => changeVideoSource(e.currentTarget.value)}
+              >
+                {videoDevicesList.map((device) => (
+                  <option key={device}>{device}</option>
+                ))}
+              </select>
             </div>
+            <div className="w-full md:w-[45%] form-control">
+              <label className=" label">
+                <span className="text-xs label-text">Select microphone</span>
+              </label>
+              <select
+                disabled={connectionState !== ConnectionState.Connected}
+                className="text-xs select-bordered select select-sm"
+                onChange={(e) => changeAudioSource(e.currentTarget.value)}
+              >
+                {audioDevicesList.map((device) => (
+                  <option key={device}>{device}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="flex max-h-[77%]">
             <StreamerVideo myinfo={myInfo} room={room} />
-            <div className="flex px-2 py-1 border border-dashed rounded-lg border-gray-500/50 justify-evenly">
-              <button
-                className="btn btn-outline btn-sm w-[150px]"
-                onClick={toggleAudio}
-                disabled={connectionState !== ConnectionState.Connected}
-              >
-                {isAudioEnabled ? 'Mute Audio' : 'Unmute Audio'}
-              </button>
-              <button
-                className="btn btn-outline btn-sm w-[150px]"
-                onClick={toggleVideo}
-                disabled={connectionState !== ConnectionState.Connected}
-              >
-                {isVideoEnabled ? 'Mute Video' : 'Unmute Video'}
-              </button>
-              <button
-                className="btn btn-outline btn-sm w-[150px]"
-                onClick={leaveRoom}
-                disabled={connectionState !== ConnectionState.Connected}
-              >
-                End Stream
-              </button>
-            </div>
+          </div>
+
+          <div className="w-full flex flex-col md:flex-row space-y-1 md:space-y-0 px-2 py-1 border border-dashed rounded-lg border-gray-500/50 justify-evenly">
+            <button
+              className="btn btn-outline btn-sm w-full md:w-[150px]"
+              onClick={toggleAudio}
+              disabled={connectionState !== ConnectionState.Connected}
+            >
+              {isAudioEnabled ? 'Mute Audio' : 'Unmute Audio'}
+            </button>
+            <button
+              className="btn btn-outline btn-sm w-full md:w-[150px]"
+              onClick={toggleVideo}
+              disabled={connectionState !== ConnectionState.Connected}
+            >
+              {isVideoEnabled ? 'Mute Video' : 'Unmute Video'}
+            </button>
+            <button
+              className="btn btn-outline btn-sm w-full md:w-[150px]"
+              onClick={leaveRoom}
+              disabled={connectionState !== ConnectionState.Connected}
+            >
+              End Stream
+            </button>
           </div>
         </div>
       ) : null}

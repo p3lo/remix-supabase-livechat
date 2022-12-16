@@ -52,41 +52,39 @@ export function StreamerVideo({ myinfo, room }: StreamerVideoProps) {
   }, [cameraPublication?.videoTrack, cameraPublication?.isMuted]);
 
   return (
-    <>
-      <div className={`h-[43vh] w-full  overflow-hidden rounded-lg bg-gray-700`}>
-        <audio ref={micRef} autoPlay muted={isLocal} />
-        {!cameraPublication?.isMuted ? (
-          <ReactPlayer
-            //
-            playsinline // very very imp prop
-            playIcon={<></>}
-            //
-            pip={false}
-            light={false}
-            controls={false}
-            muted={true}
-            playing={true}
-            //
-            url={webcamMediaStream}
-            style={{ transform: 'rotateY(180deg)' }}
-            //
-            height={'100%'}
-            width={'100%'}
-            // style={flipStyle}
-            onError={(err) => {
-              console.log(err, 'participant video error');
-            }}
-          />
-        ) : (
-          <div className="flex items-center justify-center w-full h-full">
-            <div
-              className={`z-10 flex h-[52px] w-[52px] items-center justify-center rounded-full bg-gray-800 2xl:h-[92px] 2xl:w-[92px]`}
-            >
-              <p className="text-2xl text-white">{String(myinfo?.identity).charAt(0).toUpperCase()}</p>
-            </div>
+    <div className="flex w-full rounded-lg bg-gray-700 overflow-hidden">
+      <audio ref={micRef} autoPlay muted={isLocal} />
+      {!cameraPublication?.isMuted ? (
+        <ReactPlayer
+          className="flex m-auto w-full h-full"
+          playsinline // very very imp prop
+          playIcon={<></>}
+          //
+          pip={false}
+          light={false}
+          controls={false}
+          muted={true}
+          playing={true}
+          //
+          url={webcamMediaStream}
+          style={{ transform: 'rotateY(180deg)' }}
+          //
+          width={'100%'}
+          height={'100%'}
+          // style={flipStyle}
+          onError={(err) => {
+            console.log(err, 'participant video error');
+          }}
+        />
+      ) : (
+        <div className="flex items-center justify-center w-full h-full">
+          <div
+            className={`z-10 flex h-[52px] w-[52px] items-center justify-center rounded-full bg-gray-800 2xl:h-[92px] 2xl:w-[92px]`}
+          >
+            <p className="text-2xl text-white">{String(myinfo?.identity).charAt(0).toUpperCase()}</p>
           </div>
-        )}
-      </div>
-    </>
+        </div>
+      )}
+    </div>
   );
 }
