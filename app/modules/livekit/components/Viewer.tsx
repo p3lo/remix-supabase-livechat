@@ -35,5 +35,9 @@ export function Viewer({
     init().catch(console.error);
   }, []);
 
-  return <>{streamerInfo ? <ViewerVideo streamerinfo={streamerInfo} room={room} /> : null}</>;
+  return (
+    <div className="relative flex flex-col w-full h-full space-y-1">
+      {streamerInfo ? <ViewerVideo streamerinfo={streamerInfo} room={room} /> : null}
+    </div>
+  );
 }

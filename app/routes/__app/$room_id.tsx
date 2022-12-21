@@ -11,8 +11,8 @@ import { db } from '~/database';
 import { getAuthSession } from '~/modules/auth';
 import { chatEmitter } from '~/modules/chat/emitter.server';
 import { getAccessToken, getRoom } from '~/modules/livekit';
+import { Chat } from '~/modules/livekit/components/Chat';
 import { Streamer } from '~/modules/livekit/components/Streamer';
-import { StreamerChat } from '~/modules/livekit/components/StreamerChat';
 import { Viewer } from '~/modules/livekit/components/Viewer';
 import { makeNick } from '~/modules/user';
 import { LIVEKIT_SERVER } from '~/utils';
@@ -134,18 +134,25 @@ export default function Room() {
   const { user, user_type, token, server, roomName } = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex flex-col w-full h-full py-3 mx-auto sm:w-[90%] md:w-[95%] lg:w-[85%] xl:w-[75%] 2xl:w-[70%] border border-spacing-1 border-gray-500/50 p-1 m-3">
+    <div className="flex flex-col w-full py-3 mx-auto sm:w-[90%] md:w-[95%] lg:w-[85%] xl:w-[75%] 2xl:w-[70%] border border-spacing-1 border-gray-500/50 p-1 m-3">
       {user_type === 'streamer' ? (
-        <div className="flex flex-col md:items-stretch md:h-[70vh] h-full md:flex-row border border-spacing-1 border-gray-500/50 p-1 gap-1">
-          <div className="grow min-h-full">
+        <div className="grid grid-cols-3 gap-1 p-1 border border-gray-500/50 ">
+          <div className="col-span-3 md:col-span-2 h-[70vh]">
             <Streamer user={user!} token={token} server={server} />
           </div>
-          <div className="md:w-[400px] md:grow-0 grow h-[300px] md:h-full">
-            <StreamerChat room={roomName} user={user!} />
+          <div className="col-span-3 md:col-span-1 h-[30vh] md:h-[70vh]">
+            <Chat room={roomName} user={user!} />
           </div>
         </div>
       ) : (
-        <Viewer user={user!} token={token} server={server} />
+        <div className="grid grid-cols-3 gap-1 p-1 border border-gray-500/50 ">
+          <div className="col-span-3 md:col-span-2 h-[60vh]">
+            <Viewer user={user!} token={token} server={server} />
+          </div>
+          <div className="col-span-3 md:col-span-1 h-[30vh] md:h-[60vh]">
+            <Chat room={roomName} user={user!} />
+          </div>
+        </div>
       )}
     </div>
   );

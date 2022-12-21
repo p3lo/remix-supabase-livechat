@@ -2,7 +2,7 @@ import React from 'react';
 
 import { BsCameraVideo } from 'react-icons/bs';
 
-import type { MessageChat } from './StreamerChat';
+import type { MessageChat } from './Chat';
 
 export function ChatMessage({ message, room_name }: { message: MessageChat; room_name: string }) {
   return (

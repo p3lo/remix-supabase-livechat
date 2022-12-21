@@ -18,7 +18,7 @@ export interface MessageChat {
   };
 }
 
-export function StreamerChat({ room, user }: { room: string; user: { id: string; nickname: string; role: string } }) {
+export function Chat({ room, user }: { room: string; user: { id: string; nickname: string; role: string } }) {
   const get_messages: MessageChat[] = useMatches()[2].data.messages;
   const send_message = useFetcher();
   const [message, setMessage] = React.useState<string>('');
@@ -54,10 +54,10 @@ export function StreamerChat({ room, user }: { room: string; user: { id: string;
   };
 
   return (
-    <div className="flex flex-col h-full space-y-2 border border-gray-500/50 py-2 px-1 overflow-y-hidden">
+    <div className="flex flex-col h-full px-1 py-2 space-y-2 overflow-y-hidden border border-gray-500/50">
       <div
         ref={messagesEndRef}
-        className=" flex flex-col space-y-1 overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-400 scrollbar-thumb-rounded-full scrollbar-track-rounded-full "
+        className="flex flex-col space-y-1 overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-400 scrollbar-thumb-rounded-full scrollbar-track-rounded-full"
       >
         {get_messages
           .slice()
@@ -69,13 +69,14 @@ export function StreamerChat({ room, user }: { room: string; user: { id: string;
       <div className="flex space-x-1">
         <input
           type="text"
-          placeholder="Message"
+          placeholder={user ? 'Type your message' : 'You need to be logged in to chat'}
           className="w-full input input-bordered input-sm"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
+          disabled={user ? false : true}
         />
-        <button className="btn btn-outline btn-info btn-sm" onClick={sendMessage}>
+        <button disabled={user ? false : true} className="btn btn-outline btn-info btn-sm" onClick={sendMessage}>
           Send
         </button>
       </div>

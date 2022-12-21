@@ -52,11 +52,11 @@ export function StreamerVideo({ myinfo, room }: StreamerVideoProps) {
   }, [cameraPublication?.videoTrack, cameraPublication?.isMuted]);
 
   return (
-    <div className="flex w-full rounded-lg bg-gray-700 overflow-hidden">
+    <div className="relative w-full h-full bg-gray-700 rounded-lg">
       <audio ref={micRef} autoPlay muted={isLocal} />
       {!cameraPublication?.isMuted ? (
         <ReactPlayer
-          className="flex m-auto w-full h-full"
+          className="absolute top-0 left-0 object-cover"
           playsinline // very very imp prop
           playIcon={<></>}
           //

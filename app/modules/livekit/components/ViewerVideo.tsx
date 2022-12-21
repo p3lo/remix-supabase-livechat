@@ -43,10 +43,11 @@ export function ViewerVideo({ streamerinfo, room }: StreamerVideoProps) {
 
   return (
     <>
-      <div className={`h-full w-full  overflow-hidden rounded-lg bg-gray-700`}>
+      <div className="relative w-full h-full bg-gray-700 rounded-lg">
         {!cameraPublication?.isMuted ? (
           <ReactPlayer
             //
+            className="absolute top-0 left-0 object-cover"
             playsinline // very very imp prop
             playIcon={<></>}
             //

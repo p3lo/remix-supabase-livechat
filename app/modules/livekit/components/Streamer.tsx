@@ -5,7 +5,6 @@ import type { LocalParticipant, Room, RoomConnectOptions, RoomOptions } from 'li
 import { ConnectionState, VideoPresets } from 'livekit-client';
 
 import { getAudioDevices, getVideoDevices, setMediaEnabled } from '../service.client';
-import { StreamerChat } from './StreamerChat';
 import { StreamerVideo } from './StreamerVideo';
 
 const roomOptions: RoomOptions = {
@@ -128,10 +127,10 @@ export function Streamer({
   }
 
   return (
-    <>
+    <div className="relative flex flex-col w-full h-full space-y-1">
       {myInfo ? (
-        <div className="flex flex-col space-y-1 h-full relative w-full">
-          <div className="w-full flex flex-col md:flex-row px-2 py-1 border border-dashed rounded-lg border-gray-500/50 justify-evenly">
+        <>
+          <div className="flex flex-col flex-none w-full px-2 py-1 border border-dashed rounded-lg md:flex-row border-gray-500/50 justify-evenly">
             <div className="w-full md:w-[45%] form-control">
               <label className="label">
                 <span className="text-xs label-text">Select camera</span>
@@ -161,11 +160,11 @@ export function Streamer({
               </select>
             </div>
           </div>
-          <div className="flex max-h-[77%]">
+          <div className="flex grow">
             <StreamerVideo myinfo={myInfo} room={room} />
           </div>
 
-          <div className="w-full flex flex-col md:flex-row space-y-1 md:space-y-0 px-2 py-1 border border-dashed rounded-lg border-gray-500/50 justify-evenly">
+          <div className="flex flex-col flex-none w-full px-2 py-1 space-y-1 border border-dashed rounded-lg md:flex-row md:space-y-0 border-gray-500/50 justify-evenly">
             <button
               className="btn btn-outline btn-sm w-full md:w-[150px]"
               onClick={toggleAudio}
@@ -188,8 +187,8 @@ export function Streamer({
               End Stream
             </button>
           </div>
-        </div>
+        </>
       ) : null}
-    </>
+    </div>
   );
 }
