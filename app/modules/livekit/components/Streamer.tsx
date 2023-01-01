@@ -35,7 +35,7 @@ export function Streamer({
   server: string;
 }) {
   const [myInfo, setMyInfo] = React.useState<LocalParticipant | undefined>(undefined);
-  const { room, connect, connectionState } = useRoom(roomOptions);
+  const { room, connectionState, connect } = useRoom(roomOptions);
   const [allAudioDevices, setAllAudioDevices] = React.useState<MediaDeviceInfo[]>();
   const [allVideoDevices, setAllVideoDevices] = React.useState<MediaDeviceInfo[]>();
   const [audioDevicesList, setAudioDevicesList] = React.useState<string[]>([]);
@@ -58,7 +58,10 @@ export function Streamer({
     })();
     const audio = await getAudioDevices().then((value) => value);
     const video = await getVideoDevices().then((value) => value);
+
     const connectedRoom = await connect(server, token, connectOptions);
+    console.log('connectedRoom', connectedRoom);
+
     if (!connectedRoom) {
       return;
     }
