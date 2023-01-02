@@ -43,7 +43,7 @@ export function Streamer({
   const [isAudioEnabled, setIsAudioEnabled] = React.useState(true);
   const [isVideoEnabled, setIsVideoEnabled] = React.useState(true);
 
-  async function init() {
+  async function connectRoom() {
     (async () => {
       const devices = await getAudioDevices().then((value) => value);
       setAllAudioDevices(devices);
@@ -58,10 +58,7 @@ export function Streamer({
     })();
     const audio = await getAudioDevices().then((value) => value);
     const video = await getVideoDevices().then((value) => value);
-
     const connectedRoom = await connect(server, token, connectOptions);
-    console.log('connectedRoom', connectedRoom);
-
     if (!connectedRoom) {
       return;
     }
@@ -75,7 +72,22 @@ export function Streamer({
   }
 
   React.useEffect(() => {
-    init().catch(console.error);
+    connectRoom().catch(console.error);
+  }, [room]);
+
+  React.useEffect(() => {
+    (async () => {
+      await connect(server, token, connectOptions);
+    })();
+    return () => {
+      if (room) {
+        Promise.all([
+          room.localParticipant.setCameraEnabled(false),
+          room.localParticipant.setMicrophoneEnabled(false),
+        ]).then(() => {});
+        room.disconnect();
+      }
+    };
   }, []);
 
   if (room?.state === ConnectionState.Connecting) {
