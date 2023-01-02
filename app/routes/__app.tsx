@@ -5,7 +5,13 @@ import type { LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { Form, Link, Outlet, useLoaderData, useMatches } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
-import { AiOutlineLogout, AiOutlineUser, AiOutlineDollarCircle, AiOutlineHistory } from 'react-icons/ai';
+import {
+  AiOutlineLogout,
+  AiOutlineUser,
+  AiOutlineSetting,
+  AiOutlineDollarCircle,
+  AiOutlineHistory,
+} from 'react-icons/ai';
 
 import { Image } from '~/components/image';
 import { db } from '~/database';
@@ -113,6 +119,14 @@ function MainApp() {
                       Profile
                     </Link>
                   </li>
+                  {user.role === 'STREAMER' && (
+                    <li>
+                      <Link to="/room_settings">
+                        <AiOutlineSetting />
+                        Room settings
+                      </Link>
+                    </li>
+                  )}
                   <li>
                     <Link to="/buy_tokens">
                       <AiOutlineDollarCircle />
