@@ -48,11 +48,11 @@ model Room {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   realName       String
-  roomImg        String
+  roomImg        String?
   age            Int
-  language       String
+  language       String?
   description    String
-  sexOrientation String
+  sexOrientation String?
   ratePerMin     Float
   user           User     @relation(fields: [userId], references: [id])
   userId         String   @unique
