@@ -24,6 +24,14 @@ export async function loader({ request, params }: LoaderArgs) {
   const room = await getRoom(roomName);
   let user: { id: string; nickname: string; role: string } | null = null;
   if (!session && room.length === 0) return redirect('/');
+  const room_info = await db.user.findUnique({
+    where: {
+      nickname: roomName,
+    },
+    include: {
+      Room: true,
+    },
+  });
   if (room.length === 0) {
     if (session) {
       user = await db.user.findUnique({
@@ -37,6 +45,10 @@ export async function loader({ request, params }: LoaderArgs) {
         },
       });
       if (user?.nickname === roomName && user?.role === 'STREAMER') {
+        if (!room_info?.Room?.realName) {
+          return redirect(`/room_settings`);
+        }
+
         const token = getAccessToken(true, user.nickname, roomName);
         const messages = await db.chat.findMany({
           take: 40,
@@ -55,7 +67,7 @@ export async function loader({ request, params }: LoaderArgs) {
             createdAt: 'desc',
           },
         });
-        return json({ user, user_type: 'streamer', token, server: LIVEKIT_SERVER, messages, roomName });
+        return json({ user, user_type: 'streamer', token, server: LIVEKIT_SERVER, messages, roomName, room_info });
       }
     }
     return redirect('/');
@@ -90,14 +102,14 @@ export async function loader({ request, params }: LoaderArgs) {
       });
       if (user?.nickname === roomName && user?.role === 'STREAMER') {
         const token = getAccessToken(true, user.nickname, roomName);
-        return json({ user, user_type: 'streamer', token, server: LIVEKIT_SERVER, messages, roomName });
+        return json({ user, user_type: 'streamer', token, server: LIVEKIT_SERVER, messages, roomName, room_info });
       } else {
         const token = getAccessToken(false, user!.nickname, roomName);
-        return json({ user, user_type: 'viewer', token, server: LIVEKIT_SERVER, messages, roomName });
+        return json({ user, user_type: 'viewer', token, server: LIVEKIT_SERVER, messages, roomName, room_info });
       }
     } else {
       const token = getAccessToken(false, makeNick(10), roomName);
-      return json({ user: null, user_type: 'viewer', token, server: LIVEKIT_SERVER, messages, roomName });
+      return json({ user: null, user_type: 'viewer', token, server: LIVEKIT_SERVER, messages, roomName, room_info });
     }
   }
 }
@@ -131,10 +143,14 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function Room() {
-  const { user, user_type, token, server, roomName } = useLoaderData<typeof loader>();
+  const { user, user_type, token, server, roomName, room_info } = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex flex-col w-full py-3 mx-auto sm:w-[90%] md:w-[95%] lg:w-[85%] xl:w-[75%] 2xl:w-[70%] border border-spacing-1 border-gray-500/50 p-1 m-3">
+    <div className="flex flex-col w-full mx-auto sm:w-[90%] md:w-[95%] lg:w-[85%] xl:w-[75%] 2xl:w-[70%] border border-spacing-1 border-gray-500/50 p-1 m-3">
+      <div className="flex items-center p-3 space-x-3">
+        <p className="text-sm font-bold ">{room_info?.nickname} -</p>
+        <p className="text-sm">{room_info?.Room?.description}</p>
+      </div>
       {user_type === 'streamer' ? (
         <div className="grid grid-cols-3 gap-1 p-1 border border-gray-500/50 ">
           <div className="col-span-3 md:col-span-2 h-[70vh]">
@@ -154,6 +170,21 @@ export default function Room() {
           </div>
         </div>
       )}
+      <div className="flex flex-col p-3 space-y-2">
+        <p className="p-2 font-bold">{room_info?.nickname} Bio</p>
+        <div className="flex items-center">
+          <p className="text-sm font-bold basis-2/4 md:basis-1/4">Real Name:</p>
+          <p className="text-sm">{room_info?.Room?.realName}</p>
+        </div>
+        <div className="flex items-center">
+          <p className="text-sm font-bold basis-2/4 md:basis-1/4">Age:</p>
+          <p className="text-sm">{room_info?.Room?.age}</p>
+        </div>
+        <div className="flex items-center">
+          <p className="text-sm font-bold basis-2/4 md:basis-1/4">My Rate:</p>
+          <p className="text-sm">{room_info?.Room?.ratePerMin} per minute</p>
+        </div>
+      </div>
     </div>
   );
 }
