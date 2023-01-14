@@ -5,7 +5,13 @@ import type { LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { Form, Link, Outlet, useLoaderData, useMatches } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
-import { AiOutlineLogout, AiOutlineUser, AiOutlineDollarCircle, AiOutlineHistory } from 'react-icons/ai';
+import {
+  AiOutlineLogout,
+  AiOutlineUser,
+  AiOutlineSetting,
+  AiOutlineDollarCircle,
+  AiOutlineHistory,
+} from 'react-icons/ai';
 
 import { Image } from '~/components/image';
 import { db } from '~/database';
@@ -51,6 +57,11 @@ function MainApp() {
           </Link>
         </div>
         <div className="flex justify-end flex-none space-x-2">
+          {user?.role === 'STREAMER' && (
+            <Link to={`/${user.nickname}`} className="btn-success normal-case btn w-[150px] btn-sm">
+              Start stream
+            </Link>
+          )}
           <div className="dropdown dropdown-end dropdown-hover">
             <label tabIndex={0} className="w-6 h-6 btn btn-ghost btn-circle btn-xs avatar placeholder">
               <div className="w-5 rounded-full">
@@ -108,6 +119,14 @@ function MainApp() {
                       Profile
                     </Link>
                   </li>
+                  {user.role === 'STREAMER' && (
+                    <li>
+                      <Link to="/room_settings">
+                        <AiOutlineSetting />
+                        Room settings
+                      </Link>
+                    </li>
+                  )}
                   <li>
                     <Link to="/buy_tokens">
                       <AiOutlineDollarCircle />

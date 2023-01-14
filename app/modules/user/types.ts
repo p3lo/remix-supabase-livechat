@@ -5,6 +5,7 @@ export interface User {
   email: string;
   avatar?: string;
   nickname: string;
+  chat_color: string;
   credits: number;
   role: string;
 }

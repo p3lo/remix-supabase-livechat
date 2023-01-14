@@ -11,6 +11,8 @@ import {
   unstable_parseMultipartFormData as parseMultipartFormData,
 } from '@remix-run/node';
 import { Form, useActionData, useMatches } from '@remix-run/react';
+import { ChromePicker } from 'react-color';
+import { BsPalette } from 'react-icons/bs';
 import invariant from 'tiny-invariant';
 
 import { Image } from '~/components/image';
@@ -32,12 +34,14 @@ export async function action({ request }: ActionArgs) {
   invariant(typeof id === 'string', 'Invalid user id');
   if (formData.get('what') === 'update_nick') {
     const nickname = formData.get('nickname') as string;
+    const chat_color = formData.get('chatColor') as string;
     if (!id || !nickname) {
       return json<ActionData>({ errorNick: 'Nickname is already taken.' }, { status: 400 });
     }
 
     invariant(typeof nickname === 'string', 'Invalid nickname');
-    const updatedUser = await db.user.update({ where: { id }, data: { nickname } });
+    invariant(typeof chat_color === 'string', 'Invalid chat color');
+    const updatedUser = await db.user.update({ where: { id }, data: { nickname, chat_color } });
     // HANDLE DUPLICATE NICKNAME
   }
   if (formData.get('what') === 'upload_image') {
@@ -77,6 +81,7 @@ export async function action({ request }: ActionArgs) {
 function Profile() {
   const user: User = useMatches()[1].data?.user as User;
   const data = useActionData<ActionData>();
+  const [color, setColor] = React.useState(user.chat_color);
 
   return (
     <div className="flex flex-col items-center justify-center w-full space-y-3">
@@ -123,6 +128,18 @@ function Profile() {
             className="w-full max-w-xs input input-bordered"
           />
           {data?.errorNick && <span className="text-red-500 label-text-alt">{data.errorNick}</span>}
+          <div className="dropdown dropdown-end pt-2">
+            <label className="label">
+              <span className="label-text">Set your nick chat color</span>
+            </label>
+            <label tabIndex={0} className="btn btn-circle btn-ghost btn-xs text-info">
+              <BsPalette style={{ color: color }} className={` w-[20px] h-[20px]`} />
+            </label>
+            <div tabIndex={0} className="card compact dropdown-content shadow bg-base-100 rounded-box w-64">
+              <ChromePicker color={color} onChange={(newColor) => setColor(newColor.hex)} />
+            </div>
+          </div>
+          <input hidden readOnly name="chatColor" value={color} />
         </div>
         <button type="submit" name="what" value="update_nick" className="btn w-[150px]">
           Save

@@ -9,15 +9,18 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  avatar    String?
-  nickname  String   @unique @default(uuid())
-  role      Role     @default(VIEWER)
-  credits   Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Orders    Orders[]
+  id         String   @id @default(cuid())
+  email      String   @unique
+  avatar     String?
+  nickname   String   @unique @default(uuid())
+  chat_color String   @default("#000000")
+  role       Role     @default(VIEWER)
+  credits    Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Orders     Orders[]
+  Chat       Chat[]
+  Room       Room?
 }
 
 model Orders {
@@ -26,8 +29,33 @@ model Orders {
   userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  credits   Int
+  credits   Float
   price     Decimal
+}
+
+model Chat {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  room      String
+  message   String
+}
+
+model Room {
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  realName       String
+  roomImg        String?
+  age            Int
+  language       String?
+  description    String
+  sexOrientation String?
+  ratePerMin     Float
+  user           User     @relation(fields: [userId], references: [id])
+  userId         String   @unique
 }
 
 enum Role {
