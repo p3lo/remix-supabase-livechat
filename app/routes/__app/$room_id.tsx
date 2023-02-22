@@ -4,7 +4,6 @@ import { useRoom } from '@livekit/react-core';
 import type { ActionArgs, LinksFunction, LoaderArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
 import { useActionData, useLoaderData } from '@remix-run/react';
-import { useDataRefresh, useEventSource } from 'remix-utils';
 import invariant from 'tiny-invariant';
 
 import { db } from '~/database';

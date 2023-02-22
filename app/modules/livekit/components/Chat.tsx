@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { useFetcher, useMatches } from '@remix-run/react';
+import { useFetcher, useMatches, useRevalidator } from '@remix-run/react';
 import type { Room } from 'livekit-client';
-import { useEventSource, useDataRefresh } from 'remix-utils';
+import { useEventSource } from 'remix-utils';
 
 import { ChatMessage } from './ChatMessage';
 
@@ -32,14 +32,14 @@ export function Chat({ room, user }: { room: string; user: { id: string; nicknam
     event: 'message-new',
   });
 
-  let { refresh } = useDataRefresh();
+  let revalidator = useRevalidator();
 
   React.useEffect(() => {
     scrollToBottom(messagesEndRef.current!);
   }, [get_messages]);
 
   React.useEffect(() => {
-    refresh();
+    revalidator.revalidate();
     scrollToBottom(messagesEndRef.current!);
   }, [lastMessageId]);
 
