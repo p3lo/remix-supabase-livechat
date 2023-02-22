@@ -36,19 +36,19 @@ const getUserId = async (): Promise<string> => {
 };
 
 async function seed() {
-  const id = await getUserId();
+  // const id = await getUserId();
 
   // cleanup the existing database
   await prisma.user.delete({ where: { email } }).catch(() => {
     // no worries if it doesn't exist yet
   });
 
-  const user = await prisma.user.create({
-    data: {
-      email,
-      id,
-    },
-  });
+  // const user = await prisma.user.create({
+  //   data: {
+  //     email,
+  //     id,
+  //   },
+  // });
 
   // await prisma.note.create({
   //   data: {
@@ -67,7 +67,7 @@ async function seed() {
   // });
 
   console.log(`Database has been seeded. 🌱\n`);
-  console.log(`User added to your database 👇 \n🆔: ${user.id}\n📧: ${user.email}\n🔑: supabase`);
+  // console.log(`User added to your database 👇 \n🆔: ${user.id}\n📧: ${user.email}\n🔑: supabase`);
 }
 
 seed()
