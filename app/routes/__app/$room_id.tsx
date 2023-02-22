@@ -12,6 +12,7 @@ import { getAuthSession } from '~/modules/auth';
 import { chatEmitter } from '~/modules/chat/emitter.server';
 import { getAccessToken, getRoom } from '~/modules/livekit';
 import { Chat } from '~/modules/livekit/components/Chat';
+import { Dailog } from '~/modules/livekit/components/Dailog';
 import { Streamer } from '~/modules/livekit/components/Streamer';
 import { Viewer } from '~/modules/livekit/components/Viewer';
 import { makeNick } from '~/modules/user';
